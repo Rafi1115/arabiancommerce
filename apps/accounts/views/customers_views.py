@@ -2,7 +2,9 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.core.utils.mixins import BaseResponseMixin
-from ..serializers import (
+from apps.accounts.serializers import (
+    AddressCreateUpdateSerializer,
+    AddressSerializer,
     SendRegistrationOTPSerializer,
     VerifyRegistrationOTPSerializer,
     SendLoginOTPSerializer,
@@ -12,7 +14,11 @@ from ..serializers import (
     ProfileUpdateSerializer,
     AccountSoftDeleteSerializer,
     AccountRestoreSerializer,
+    AddressSerializer,
+    AddressCreateUpdateSerializer,
 )
+
+from apps.accounts.models import Address
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
@@ -32,7 +38,6 @@ def _jwt_response(user):
 # ── REGISTRATION ───────────────────────────────────────────────────────────────
 
 class SendRegistrationOTPView(BaseResponseMixin, generics.GenericAPIView):
-    """Step 1: Send OTP to phone for registration."""
     serializer_class = SendRegistrationOTPSerializer
     permission_classes = [permissions.AllowAny]
     throttle_classes = [AnonRateThrottle]
@@ -45,12 +50,12 @@ class SendRegistrationOTPView(BaseResponseMixin, generics.GenericAPIView):
         return self.success_response(
             data={
                 "phone": user.phone,
+                "name": user.profile.name,
                 "otp_code": otp_code,  # DEV ONLY — remove in production
             },
             message="OTP sent successfully." if action == "created" else "OTP resent to unverified account.",
             status_code=status.HTTP_200_OK,
         )
-
 
 class VerifyRegistrationOTPView(BaseResponseMixin, generics.GenericAPIView):
     """Step 2: Verify OTP → activate account + return JWT."""
@@ -211,3 +216,70 @@ class AccountRestoreView(BaseResponseMixin, generics.GenericAPIView):
             data={"phone": serializer.user.phone},
             message="Account restored successfully.",
         )
+    
+
+class AddressListCreateView(BaseResponseMixin, generics.GenericAPIView):
+    """List all addresses + add new one."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        addresses = Address.objects.filter(user=request.user.profile)
+        serializer = AddressSerializer(addresses, many=True)
+        return self.success_response(
+            data=serializer.data,
+            message="Addresses retrieved."
+        )
+
+    def post(self, request):
+        serializer = AddressCreateUpdateSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        address = serializer.save()
+        return self.success_response(
+            data=AddressSerializer(address).data,
+            message="Address added successfully.",
+            status_code=status.HTTP_201_CREATED,
+        )
+
+
+class AddressDetailView(BaseResponseMixin, generics.GenericAPIView):
+    """Edit or delete a specific address."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, pk, request):
+        try:
+            return Address.objects.get(pk=pk, user=request.user.profile)
+        except Address.DoesNotExist:
+            return None
+
+    def patch(self, request, pk):
+        address = self.get_object(pk, request)
+        if not address:
+            return self.error_response(
+                message="Address not found.",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+        serializer = AddressCreateUpdateSerializer(
+            address,
+            data=request.data,
+            partial=True,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return self.success_response(
+            data=AddressSerializer(address).data,
+            message="Address updated successfully.",
+        )
+
+    def delete(self, request, pk):
+        address = self.get_object(pk, request)
+        if not address:
+            return self.error_response(
+                message="Address not found.",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+        address.delete()
+        return self.success_response(message="Address deleted successfully.")

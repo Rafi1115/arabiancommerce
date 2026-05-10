@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from apps.accounts.views.customers_views import (
+    AddressDetailView,
+    AddressListCreateView,
     SendRegistrationOTPView,
     VerifyRegistrationOTPView,
     SendLoginOTPView,
@@ -34,12 +36,16 @@ urlpatterns = [
     # Account management
     path("account/delete/", AccountSoftDeleteView.as_view(), name="account-delete"),
     path("account/restore/", AccountRestoreView.as_view(), name="account-restore"),
+
+    # Address
+    path("addresses/", AddressListCreateView.as_view(), name="address-list-create"),
+    path("addresses/<int:pk>/", AddressDetailView.as_view(), name="address-detail"),
 ]
 
 
 # admin urlpatterns
 urlpatterns += [
-    path("login/", AdminLoginView.as_view(), name="admin-login"),
-    path("logout/", AdminLogoutView.as_view(), name="admin-logout"),
-    path("change-password/", AdminChangePasswordView.as_view(), name="admin-change-password"),
+    path("admin/login/", AdminLoginView.as_view(), name="admin-login"),
+    path("admin/logout/", AdminLogoutView.as_view(), name="admin-logout"),
+    path("admin/change-password/", AdminChangePasswordView.as_view(), name="admin-change-password"),
 ]

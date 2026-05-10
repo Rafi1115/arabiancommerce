@@ -118,7 +118,7 @@ class UserProfile(models.Model):
 
 class Address(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='addresses')
-    title = models.CharField(max_length=100)          # Home, Office, etc.
+    title = models.CharField(max_length=100)
     full_address = models.TextField()
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

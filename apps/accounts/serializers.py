@@ -53,14 +53,14 @@ def _verify_otp(user, otp_code: str, purpose: str) -> "OTP":
 
 class SendRegistrationOTPSerializer(serializers.Serializer):
     """
-    Step 1 of signup: user sends phone → get OTP.
-    If user already exists and is verified → error.
-    If user exists but not verified → resend OTP.
+    Step 1 of signup: user sends phone + profile info → get OTP.
     """
     phone = serializers.CharField(max_length=20)
+    name = serializers.CharField(max_length=100)
+    email = serializers.EmailField()
+    address = serializers.CharField()  # goes into Address model as full_address
 
     def validate_phone(self, value):
-        # Basic cleanup — frontend should send with country code e.g. +966...
         value = value.strip()
         if not value.startswith("+"):
             raise serializers.ValidationError(
@@ -68,8 +68,22 @@ class SendRegistrationOTPSerializer(serializers.Serializer):
             )
         return value
 
+    def validate_email(self, value):
+        phone = self.initial_data.get("phone", "").strip()
+        qs = UserProfile.objects.filter(email=value)
+        # Exclude the current user's profile if phone matches
+        if phone:
+            qs = qs.exclude(user__phone=phone)
+        if qs.exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
+    
+    
     def save(self):
         phone = self.validated_data["phone"]
+        name = self.validated_data["name"]
+        email = self.validated_data["email"]
+        address = self.validated_data["address"]
 
         if User.objects.filter(phone=phone).exists():
             user = User.objects.get(phone=phone)
@@ -77,15 +91,41 @@ class SendRegistrationOTPSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     {"phone": "This phone number is already registered. Please login."}
                 )
-            # Not verified yet — resend
+            # Not verified yet — update profile info and resend
+            profile = user.profile
+            profile.name = name
+            profile.email = email
+            profile.save()
+
+            # Update or create default address
+            Address.objects.update_or_create(
+                user=profile,
+                is_default=True,
+                defaults={"title": "Home", "full_address": address},
+            )
+
             otp_code = _create_and_send_otp(user, "registration")
             return user, otp_code, "resent"
 
         # New user — create inactive
         user = User.objects.create(phone=phone, is_active=False)
+
+        # Profile is auto-created via signal — just update it
+        profile = user.profile
+        profile.name = name
+        profile.email = email
+        profile.save()
+
+        # Create default address
+        Address.objects.create(
+            user=profile,
+            title="Home",
+            full_address=address,
+            is_default=True,
+        )
+
         otp_code = _create_and_send_otp(user, "registration")
         return user, otp_code, "created"
-
 
 class VerifyRegistrationOTPSerializer(serializers.Serializer):
     """
@@ -235,8 +275,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ["phone", "name", "email", "profile_picture", "profile_completed"]
-        read_only_fields = ["phone", "profile_completed"]
+        fields = ["phone", "name", "email", "profile_picture"]  
+        read_only_fields = ["phone"]
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
@@ -249,9 +289,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-
-     
-
+            
         instance.save()
         return instance
     
@@ -262,6 +300,21 @@ class AddressSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
+
+class AddressCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ['title', 'full_address', 'is_default']
+
+    def create(self, validated_data):
+        user_profile = self.context['request'].user.profile
+        return Address.objects.create(user=user_profile, **validated_data)
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()  
+        return instance
 
 # ── ACCOUNT MANAGEMENT ─────────────────────────────────────────────────────────
 
