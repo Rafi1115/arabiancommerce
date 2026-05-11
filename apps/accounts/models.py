@@ -32,7 +32,7 @@ class User(AbstractUser):
     No password required; auth is OTP-based.
     """
     username = models.CharField(max_length=150, unique=False, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, unique=True)
     phone = models.CharField(max_length=20, unique=True)
 
     is_deleted = models.BooleanField(default=False)

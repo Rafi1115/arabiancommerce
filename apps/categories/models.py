@@ -2,7 +2,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
-    icon = models.ImageField(upload_to='categories/icons/', null=True, blank=True)
+    image = models.ImageField(upload_to='categories/images/', null=True, blank=True)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -13,6 +13,22 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name if self.name else "Untitled Category"
+    
+
+class SubCategory(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
+    name = models.CharField(max_length=100, blank=True, null=True)
+    icon = models.ImageField(upload_to='subcategories/icons/', null=True, blank=True)
+    status = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'SubCategories'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name if self.name else "Untitled SubCategory"
 
 
 class PackagingType(models.Model):

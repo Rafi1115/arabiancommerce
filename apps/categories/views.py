@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from apps.core.utils.mixins import BaseResponseMixin
-from .models import Category, PackagingType
+from .models import Category, PackagingType, SubCategory
 from .serializers import (
     CategorySerializer,
     CategoryCreateSerializer,
@@ -11,29 +11,31 @@ from .serializers import (
     PackagingTypeSerializer,
     PackagingTypeCreateSerializer,
     PackagingTypeUpdateSerializer,
+    SubCategorySerializer,
+    SubCategoryCreateSerializer,
+    SubCategoryUpdateSerializer,
 )
 
 
 # ─────────────────────────── CATEGORY VIEWS ───────────────────────────
 
 class CategoryListView(BaseResponseMixin, APIView):
-    """
-    GET  /api/categories/          → public, list all active categories
-    GET  /api/admin/categories/    → admin, list all (active + inactive)
-    """
-
-    def get_permissions(self):
-        if self.request.path.startswith('/api/admin/'):
-            return [IsAdminUser()]
-        return [AllowAny()]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         try:
-            if request.path.startswith('/api/admin/'):
-                categories = Category.objects.all()
-            else:
-                categories = Category.objects.filter(status=True)
+            categories = Category.objects.filter(status=True)
+            serializer = CategorySerializer(categories, many=True, context={'request': request})
+            return self.success_response(data=serializer.data)
+        except Exception as exc:
+            return self.handle_exception(exc)
 
+class AdminCategoryListView(BaseResponseMixin, APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        try:
+            categories = Category.objects.all()
             serializer = CategorySerializer(categories, many=True, context={'request': request})
             return self.success_response(data=serializer.data)
         except Exception as exc:
@@ -150,25 +152,23 @@ class CategoryToggleStatusView(BaseResponseMixin, APIView):
 # ─────────────────────────── PACKAGING TYPE VIEWS ───────────────────────────
 
 class PackagingTypeListView(BaseResponseMixin, APIView):
-    """
-    GET /api/packaging-types/       → public
-    GET /api/admin/packaging-types/ → admin (all)
-    """
-
-    def get_permissions(self):
-        if self.request.path.startswith('/api/admin/'):
-            return [IsAdminUser()]
-        return [AllowAny()]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         try:
-            if request.path.startswith('/api/admin/'):
-                packaging_types = PackagingType.objects.all()
-            else:
-                packaging_types = PackagingType.objects.filter(status=True)
+            qs = PackagingType.objects.filter(status=True)
+            return self.success_response(data=PackagingTypeSerializer(qs, many=True).data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+        
 
-            serializer = PackagingTypeSerializer(packaging_types, many=True)
-            return self.success_response(data=serializer.data)
+class AdminPackagingTypeListView(BaseResponseMixin, APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        try:
+            qs = PackagingType.objects.all()
+            return self.success_response(data=PackagingTypeSerializer(qs, many=True).data)
         except Exception as exc:
             return self.handle_exception(exc)
 
@@ -271,5 +271,90 @@ class PackagingTypeToggleStatusView(BaseResponseMixin, APIView):
                 data=PackagingTypeSerializer(pt).data,
                 message=f"Packaging type {status_label} successfully"
             )
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class SubCategoryListView(BaseResponseMixin, APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            qs = SubCategory.objects.filter(status=True)
+            return self.success_response(data=SubCategorySerializer(qs, many=True).data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+        
+
+class SubCategoryCreateView(BaseResponseMixin, APIView):
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def post(self, request):
+        try:
+            serializer = SubCategoryCreateSerializer(data=request.data)
+            if not serializer.is_valid():
+                return self.error_response(message="Validation failed", error_code="VALIDATION_ERROR", errors=serializer.errors)
+            sub = serializer.save()
+            return self.created_response(data=SubCategorySerializer(sub).data, message="SubCategory created successfully")
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class SubCategoryDetailView(BaseResponseMixin, APIView):
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_object(self, pk):
+        try:
+            return SubCategory.objects.get(pk=pk)
+        except SubCategory.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        sub = self.get_object(pk)
+        if not sub:
+            return self.not_found_response("SubCategory not found")
+        return self.success_response(data=SubCategorySerializer(sub).data)
+
+    def patch(self, request, pk):
+        sub = self.get_object(pk)
+        if not sub:
+            return self.not_found_response("SubCategory not found")
+        serializer = SubCategoryUpdateSerializer(sub, data=request.data, partial=True)
+        if not serializer.is_valid():
+            return self.error_response(message="Validation failed", error_code="VALIDATION_ERROR", errors=serializer.errors)
+        sub = serializer.save()
+        return self.updated_response(data=SubCategorySerializer(sub).data, message="SubCategory updated successfully")
+
+    def delete(self, request, pk):
+        sub = self.get_object(pk)
+        if not sub:
+            return self.not_found_response("SubCategory not found")
+        sub.delete()
+        return self.deleted_response("SubCategory deleted successfully")
+
+
+class SubCategoryToggleStatusView(BaseResponseMixin, APIView):
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        try:
+            sub = SubCategory.objects.get(pk=pk)
+        except SubCategory.DoesNotExist:
+            return self.not_found_response("SubCategory not found")
+        sub.status = not sub.status
+        sub.save()
+        label = "activated" if sub.status else "deactivated"
+        return self.success_response(data=SubCategorySerializer(sub).data, message=f"SubCategory {label} successfully")
+    
+
+class AdminSubCategoryListView(BaseResponseMixin, APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        try:
+            qs = SubCategory.objects.all()
+            return self.success_response(data=SubCategorySerializer(qs, many=True).data)
         except Exception as exc:
             return self.handle_exception(exc)
