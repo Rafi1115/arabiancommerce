@@ -3,9 +3,11 @@ from .models import Category, SubCategory, PackagingType
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
+    item_count = serializers.ReadOnlyField()
+
     class Meta:
         model = SubCategory
-        fields = ['id', 'category', 'name', 'icon', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'category', 'name', 'icon', 'item_count', 'status', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 

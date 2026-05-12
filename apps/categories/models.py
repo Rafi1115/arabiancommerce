@@ -13,7 +13,12 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name if self.name else "Untitled Category"
+
+    @property
+    def item_count(self):
+        return self.products.filter(status=True).count()
     
+
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
@@ -29,6 +34,10 @@ class SubCategory(models.Model):
 
     def __str__(self):
         return self.name if self.name else "Untitled SubCategory"
+
+    @property
+    def item_count(self):
+        return self.products.filter(status=True).count()
 
 
 class PackagingType(models.Model):

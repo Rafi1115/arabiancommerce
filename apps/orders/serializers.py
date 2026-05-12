@@ -31,13 +31,13 @@ class CartItemAddSerializer(serializers.Serializer):
         return value
 
     def validate(self, data):
-        from apps.products.models import CutType, ProductPackagingType
+        from apps.products.models import CutType, ProductCutType, ProductPackagingType
         product_id = data.get('product_id')
         cut_type_id = data.get('cut_type_id')
         packaging_type_id = data.get('packaging_type_id')
 
         if cut_type_id:
-            if not CutType.objects.filter(pk=cut_type_id, product_id=product_id).exists():
+            if not ProductCutType.objects.filter(product_id=product_id, cut_type_id=cut_type_id).exists():
                 raise serializers.ValidationError("Cut type does not belong to this product.")
 
         if packaging_type_id:

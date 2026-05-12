@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from apps.core.utils.mixins import BaseResponseMixin
-from .models import Product, CutType, ProductPackagingType, Inventory
+from .models import Product, CutType, ProductCutType, ProductPackagingType, Inventory, ProductImage
 from .serializers import (
     ProductListSerializer,
     ProductDetailSerializer,
@@ -13,7 +13,11 @@ from .serializers import (
     InventoryUpdateSerializer,
     AdminInventorySerializer,
     CutTypeSerializer,
+    CutTypeCreateSerializer,
+    CutTypeUpdateSerializer,
+    ProductCutTypeSerializer,
     ProductPackagingTypeSerializer,
+    ProductImageSerializer,
 )
 
 # ─────────────────────────── PUBLIC / MOBILE VIEWS ───────────────────────────
@@ -55,7 +59,7 @@ class ProductDetailView(BaseResponseMixin, APIView):
                 product = Product.objects.select_related(
                     'category', 'inventory'
                 ).prefetch_related(
-                    'cut_types', 'packaging_types__packaging_type'
+                    'cut_types__cut_type', 'packaging_types__packaging_type'
                 ).get(pk=pk, status=True)
             except Product.DoesNotExist:
                 return self.not_found_response("Product not found")
@@ -224,7 +228,7 @@ class AdminProductToggleStatusView(BaseResponseMixin, APIView):
 class ProductCutTypeView(BaseResponseMixin, APIView):
     """
     GET    /api/admin/products/<pk>/cut-types/
-    POST   /api/admin/products/<pk>/cut-types/   → add cut type
+    POST   /api/admin/products/<pk>/cut-types/   → link a global cut type to a product
     DELETE /api/admin/products/<pk>/cut-types/<ct_id>/
     """
     permission_classes = [IsAdminUser]
@@ -240,7 +244,7 @@ class ProductCutTypeView(BaseResponseMixin, APIView):
             product = self.get_product(pk)
             if not product:
                 return self.not_found_response("Product not found")
-            serializer = CutTypeSerializer(product.cut_types.all(), many=True)
+            serializer = ProductCutTypeSerializer(product.cut_types.all(), many=True)
             return self.success_response(data=serializer.data)
         except Exception as exc:
             return self.handle_exception(exc)
@@ -250,15 +254,23 @@ class ProductCutTypeView(BaseResponseMixin, APIView):
             product = self.get_product(pk)
             if not product:
                 return self.not_found_response("Product not found")
-            name = request.data.get('name', '').strip()
-            if not name:
-                return self.bad_request_response("Cut type name is required")
-            if product.cut_types.filter(name__iexact=name).exists():
-                return self.bad_request_response("Cut type already exists for this product")
-            ct = CutType.objects.create(product=product, name=name)
+
+            cut_type_id = request.data.get('cut_type_id')
+            if not cut_type_id:
+                return self.bad_request_response("Cut type id is required")
+
+            try:
+                cut_type = CutType.objects.get(pk=cut_type_id, status=True)
+            except CutType.DoesNotExist:
+                return self.not_found_response("Cut type not found or inactive")
+
+            if ProductCutType.objects.filter(product=product, cut_type=cut_type).exists():
+                return self.bad_request_response("Cut type already linked to this product")
+
+            pct = ProductCutType.objects.create(product=product, cut_type=cut_type)
             return self.created_response(
-                data=CutTypeSerializer(ct).data,
-                message="Cut type added successfully"
+                data=ProductCutTypeSerializer(pct).data,
+                message="Cut type linked to product successfully"
             )
         except Exception as exc:
             return self.handle_exception(exc)
@@ -269,11 +281,135 @@ class ProductCutTypeView(BaseResponseMixin, APIView):
             if not product:
                 return self.not_found_response("Product not found")
             try:
-                ct = CutType.objects.get(pk=ct_id, product=product)
+                pct = ProductCutType.objects.get(pk=ct_id, product=product)
+            except ProductCutType.DoesNotExist:
+                return self.not_found_response("Cut type link not found")
+            pct.delete()
+            return self.deleted_response("Cut type removed from product successfully")
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class CutTypeListView(BaseResponseMixin, APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            qs = CutType.objects.filter(status=True)
+            return self.success_response(data=CutTypeSerializer(qs, many=True).data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class AdminCutTypeListView(BaseResponseMixin, APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        try:
+            qs = CutType.objects.all()
+            return self.success_response(data=CutTypeSerializer(qs, many=True).data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class CutTypeCreateView(BaseResponseMixin, APIView):
+    """
+    POST /api/admin/cut-types/create/
+    """
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        try:
+            serializer = CutTypeCreateSerializer(data=request.data)
+            if not serializer.is_valid():
+                return self.error_response(
+                    message="Validation failed",
+                    error_code="VALIDATION_ERROR",
+                    errors=serializer.errors
+                )
+            cut_type = serializer.save()
+            return self.created_response(
+                data=CutTypeSerializer(cut_type).data,
+                message="Cut type created successfully"
+            )
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class CutTypeDetailView(BaseResponseMixin, APIView):
+    """
+    GET    /api/admin/cut-types/<pk>/
+    PATCH  /api/admin/cut-types/<pk>/
+    DELETE /api/admin/cut-types/<pk>/
+    """
+    permission_classes = [IsAdminUser]
+
+    def get_object(self, pk):
+        try:
+            return CutType.objects.get(pk=pk)
+        except CutType.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        try:
+            cut_type = self.get_object(pk)
+            if not cut_type:
+                return self.not_found_response("Cut type not found")
+            return self.success_response(data=CutTypeSerializer(cut_type).data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+    def patch(self, request, pk):
+        try:
+            cut_type = self.get_object(pk)
+            if not cut_type:
+                return self.not_found_response("Cut type not found")
+            serializer = CutTypeUpdateSerializer(cut_type, data=request.data, partial=True)
+            if not serializer.is_valid():
+                return self.error_response(
+                    message="Validation failed",
+                    error_code="VALIDATION_ERROR",
+                    errors=serializer.errors
+                )
+            cut_type = serializer.save()
+            return self.updated_response(
+                data=CutTypeSerializer(cut_type).data,
+                message="Cut type updated successfully"
+            )
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+    def delete(self, request, pk):
+        try:
+            cut_type = self.get_object(pk)
+            if not cut_type:
+                return self.not_found_response("Cut type not found")
+            cut_type.delete()
+            return self.deleted_response("Cut type deleted successfully")
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class CutTypeToggleStatusView(BaseResponseMixin, APIView):
+    """
+    PATCH /api/admin/cut-types/<pk>/toggle-status/
+    """
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        try:
+            try:
+                cut_type = CutType.objects.get(pk=pk)
             except CutType.DoesNotExist:
                 return self.not_found_response("Cut type not found")
-            ct.delete()
-            return self.deleted_response("Cut type deleted successfully")
+
+            cut_type.status = not cut_type.status
+            cut_type.save()
+            status_label = "activated" if cut_type.status else "deactivated"
+            return self.success_response(
+                data=CutTypeSerializer(cut_type).data,
+                message=f"Cut type {status_label} successfully"
+            )
         except Exception as exc:
             return self.handle_exception(exc)
 
@@ -343,3 +479,73 @@ class AdminInventoryUpdateView(BaseResponseMixin, APIView):
             )
         except Exception as exc:
             return self.handle_exception(exc)
+
+
+class ProductImageView(BaseResponseMixin, APIView):
+    """
+    GET    /api/admin/products/<pk>/images/          → list all images
+    POST   /api/admin/products/<pk>/images/          → upload multiple images
+    DELETE /api/admin/products/<pk>/images/<img_id>/ → delete one image
+    PATCH  /api/admin/products/<pk>/images/<img_id>/ → set as primary
+    """
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_product(self, pk):
+        try:
+            return Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        product = self.get_product(pk)
+        if not product:
+            return self.not_found_response("Product not found")
+        images = product.images.all()
+        return self.success_response(data=ProductImageSerializer(images, many=True, context={'request': request}).data)
+
+    def post(self, request, pk):
+        product = self.get_product(pk)
+        if not product:
+            return self.not_found_response("Product not found")
+
+        files = request.FILES.getlist('images')  # multiple files
+        if not files:
+            return self.error_response(message="No images provided.", error_code="VALIDATION_ERROR")
+
+        created = []
+        for file in files:
+            img = ProductImage.objects.create(product=product, image=file)
+            created.append(img)
+
+        return self.created_response(
+            data=ProductImageSerializer(created, many=True, context={'request': request}).data,
+            message=f"{len(created)} image(s) uploaded successfully"
+        )
+
+    def delete(self, request, pk, img_id):
+        product = self.get_product(pk)
+        if not product:
+            return self.not_found_response("Product not found")
+        try:
+            img = ProductImage.objects.get(pk=img_id, product=product)
+        except ProductImage.DoesNotExist:
+            return self.not_found_response("Image not found")
+        img.image.delete(save=False)  # delete file from storage too
+        img.delete()
+        return self.deleted_response("Image deleted successfully")
+
+    def patch(self, request, pk, img_id):
+        product = self.get_product(pk)
+        if not product:
+            return self.not_found_response("Product not found")
+        try:
+            img = ProductImage.objects.get(pk=img_id, product=product)
+        except ProductImage.DoesNotExist:
+            return self.not_found_response("Image not found")
+        img.is_primary = True
+        img.save()  # triggers unset of others via save()
+        return self.success_response(
+            data=ProductImageSerializer(img, context={'request': request}).data,
+            message="Primary image updated"
+        )
