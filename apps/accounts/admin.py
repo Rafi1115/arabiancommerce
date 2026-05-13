@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
-from .models import User, OTP, UserProfile, Address
+from .models import User, OTP, UserProfile, Address, DeliveryZone
 
 
 @admin.register(User)
@@ -132,18 +132,37 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user_profile_info', 'title', 'full_address_preview', 'is_default', 'created_at')
-    list_filter = ('is_default', 'created_at', 'updated_at')
-    search_fields = ('user__user__phone', 'user__name', 'title', 'full_address')
+    list_display = ('id', 'user_profile_info', 'title', 'city', 'area', 'delivery_zone_info', 'is_default', 'created_at')
+    list_filter = ('is_default', 'city', 'area', 'delivery_zone', 'created_at', 'updated_at')
+    search_fields = ('user__user__phone', 'user__name', 'title', 'full_address', 'city', 'area')
     readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
+        ('Address Details', {
+            'fields': ('title', 'full_address', 'city', 'area', 'latitude', 'longitude')
+        }),
+        ('Delivery', {
+            'fields': ('delivery_zone',)
+        }),
+        ('Settings', {
+            'fields': ('is_default',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
     
     def user_profile_info(self, obj):
         return f"{obj.user.user.phone} - {obj.user.name or 'No name'}"
     user_profile_info.short_description = 'User'
     
-    def full_address_preview(self, obj):
-        return obj.full_address[:50] + '...' if len(obj.full_address) > 50 else obj.full_address
-    full_address_preview.short_description = 'Address'
+    def delivery_zone_info(self, obj):
+        return obj.delivery_zone.name if obj.delivery_zone else 'No zone'
+    delivery_zone_info.short_description = 'Delivery Zone'
     
     actions = ['set_as_default']
     
@@ -153,15 +172,27 @@ class AddressAdmin(admin.ModelAdmin):
             address.save()
         self.message_user(request, f"{queryset.count()} address(es) set as default.")
     set_as_default.short_description = "Set selected address(es) as default"
+
+
+@admin.register(DeliveryZone)
+class DeliveryZoneAdmin(admin.ModelAdmin):
+    list_display = ('name', 'city', 'delivery_fee', 'is_active', 'estimated_delivery_time', 'created_at')
+    list_filter = ('city', 'is_active', 'created_at')
+    search_fields = ('name', 'city', 'areas')
+    readonly_fields = ('created_at', 'updated_at')
     
     fieldsets = (
-        ('User Profile', {
-            'fields': ('user',)
+        ('Basic Info', {
+            'fields': ('name', 'city', 'is_active')
         }),
-        ('Address Details', {
-            'fields': ('title', 'full_address', 'is_default')
+        ('Coverage & Pricing', {
+            'fields': ('areas', 'delivery_fee', 'estimated_delivery_time')
         }),
         ('Timestamps', {
-            'fields': ('created_at', 'updated_at')
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
         }),
     )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by('city', 'name')

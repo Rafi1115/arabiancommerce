@@ -120,6 +120,11 @@ class Address(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='addresses')
     title = models.CharField(max_length=100)
     full_address = models.TextField()
+    city = models.CharField(max_length=100, blank=True)
+    area = models.CharField(max_length=100, blank=True)  # neighborhood/district
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    delivery_zone = models.ForeignKey('DeliveryZone', on_delete=models.SET_NULL, null=True, blank=True)
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -134,7 +139,54 @@ class Address(models.Model):
         # If this address is set as default, unset others
         if self.is_default:
             Address.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        
+        # Auto-assign delivery zone if not set and we have city/area
+        if not self.delivery_zone and self.city and self.area:
+            self.delivery_zone = self._find_delivery_zone()
+        
         super().save(*args, **kwargs)
+    
+    def _find_delivery_zone(self):
+        """Find matching delivery zone based on city and area"""
+        from django.db.models import Q
+        
+        # Try exact city + area match
+        zone = DeliveryZone.objects.filter(
+            city__iexact=self.city,
+            areas__icontains=self.area,
+            is_active=True
+        ).first()
+        
+        if zone:
+            return zone
+            
+        # Try city match only
+        zone = DeliveryZone.objects.filter(
+            city__iexact=self.city,
+            is_active=True
+        ).first()
+        
+        return zone
+
+
+class DeliveryZone(models.Model):
+    """
+    Delivery zones for location-based pricing
+    """
+    name = models.CharField(max_length=100, unique=True)  # e.g., "Downtown Dubai", "Jumeirah"
+    city = models.CharField(max_length=100)
+    areas = models.JSONField(default=list, help_text="List of areas covered by this zone")  # ["area1", "area2"]
+    delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
+    estimated_delivery_time = models.CharField(max_length=50, blank=True, help_text="e.g., '30-45 mins', '1-2 hours'")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['city', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.city}) - AED {self.delivery_fee}"
 
 
 

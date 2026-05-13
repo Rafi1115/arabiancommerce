@@ -1,0 +1,107 @@
+{
+  "delivery_zones": [
+    {
+      "name": "Downtown Dubai",
+      "city": "Dubai",
+      "areas": ["Burj Khalifa", "Dubai Mall", "Business Bay"],
+      "delivery_fee": 15.00,
+      "estimated_delivery_time": "15-25 mins",
+      "is_active": true
+    },
+    {
+      "name": "Dubai Marina",
+      "city": "Dubai",
+      "areas": ["Marina", "Jumeirah Beach", "Palm Jumeirah"],
+      "delivery_fee": 25.00,
+      "estimated_delivery_time": "20-35 mins",
+      "is_active": true
+    },
+    {
+      "name": "Dubai Hills",
+      "city": "Dubai",
+      "areas": ["Dubai Hills", "Mohammed Bin Rashid City", "Dubai Festival City"],
+      "delivery_fee": 35.00,
+      "estimated_delivery_time": "30-50 mins",
+      "is_active": true
+    },
+    {
+      "name": "Sharjah Center",
+      "city": "Sharjah",
+      "areas": ["Sharjah City Center", "Al Wahda", "Al Qasimia"],
+      "delivery_fee": 45.00,
+      "estimated_delivery_time": "45-70 mins",
+      "is_active": true
+    }
+  ],
+  "categories": [
+    {
+      "name": "Fresh Meat",
+      "description": "Premium quality fresh meat",
+      "status": true
+    },
+    {
+      "name": "Seafood",
+      "description": "Fresh seafood and fish",
+      "status": true
+    }
+  ],
+  "subcategories": [
+    {
+      "name": "Chicken",
+      "category": "Fresh Meat",
+      "status": true
+    },
+    {
+      "name": "Beef",
+      "category": "Fresh Meat",
+      "status": true
+    },
+    {
+      "name": "Fish",
+      "category": "Seafood",
+      "status": true
+    }
+  ],
+  "products": [
+    {
+      "name": "Whole Chicken",
+      "description": "Fresh whole chicken, farm raised",
+      "price": 45.00,
+      "category": "Fresh Meat",
+      "subcategory": "Chicken",
+      "status": true,
+      "image": "https://via.placeholder.com/300x200?text=Whole+Chicken"
+    },
+    {
+      "name": "Beef Ribeye Steak",
+      "description": "Premium beef ribeye steak, 500g",
+      "price": 85.00,
+      "category": "Fresh Meat",
+      "subcategory": "Beef",
+      "status": true,
+      "image": "https://via.placeholder.com/300x200?text=Ribeye+Steak"
+    },
+    {
+      "name": "Fresh Salmon Fillet",
+      "description": "Atlantic salmon fillet, 400g",
+      "price": 65.00,
+      "category": "Seafood",
+      "subcategory": "Fish",
+      "status": true,
+      "image": "https://via.placeholder.com/300x200?text=Salmon+Fillet"
+    }
+  ],
+  "packaging_types": [
+    {
+      "packaging_type": "Vacuum Pack",
+      "description": "Airtight vacuum packaging",
+      "status": true
+    },
+    {
+      "packaging_type": "Fresh Box",
+      "description": "Insulated fresh keeping box",
+      "status": true
+    }
+  ]
+}</content>
+<parameter name="filePath">/home/r4fi/Documents/arabiancommerce/test_data.json

@@ -63,6 +63,16 @@ class Order(models.Model):
         ('refunded', 'Refunded'),
     ]
 
+    RECEIVE_METHOD_CHOICES = [
+        ('home_delivery', 'Home Delivery'),
+        ('receive_in_market', 'Receive in Market'),
+    ]
+
+    DELIVERY_TYPE_CHOICES = [
+        ('today', 'Quick Delivery Today'),
+        ('scheduled', 'Scheduled Pick-up'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='orders')
     order_number = models.CharField(max_length=20, unique=True)
     delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
@@ -73,6 +83,17 @@ class Order(models.Model):
     delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     notes = models.TextField(blank=True)
+    receive_method = models.CharField(
+        max_length=20,
+        choices=RECEIVE_METHOD_CHOICES,
+        default='home_delivery'
+    )
+    delivery_type = models.CharField(
+        max_length=20,
+        choices=DELIVERY_TYPE_CHOICES,
+        default='today'
+    )
+    scheduled_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

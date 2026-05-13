@@ -59,7 +59,16 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ['id', 'items', 'item_count', 'total', 'delivery_fee', 'grand_total']
 
     def get_delivery_fee(self, obj):
-        # Fixed delivery fee for now — can make dynamic later
+        # Get delivery fee from user's default address
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            try:
+                default_address = request.user.profile.addresses.filter(is_default=True).first()
+                if default_address and default_address.delivery_zone:
+                    return float(default_address.delivery_zone.delivery_fee)
+            except:
+                pass
+        # Fallback to default fee
         return 89 if obj.items.exists() else 0
 
     def get_grand_total(self, obj):
@@ -113,6 +122,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'order_number', 'status', 'payment_method', 'payment_status',
+            'receive_method', 'delivery_type', 'scheduled_at',   # ← new
             'delivery_address', 'items', 'subtotal', 'delivery_fee', 'total',
             'tracking', 'notes', 'created_at', 'updated_at'
         ]
@@ -121,7 +131,23 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 class CheckoutSerializer(serializers.Serializer):
     address_id = serializers.IntegerField()
     payment_method = serializers.ChoiceField(choices=['cash', 'card', 'tabby', 'tamara'])
+    receive_method = serializers.ChoiceField(
+        choices=['home_delivery', 'receive_in_market'],
+        default='home_delivery'
+    )
+    delivery_type = serializers.ChoiceField(
+        choices=['today', 'scheduled'],
+        default='today'
+    )
+    scheduled_at = serializers.DateTimeField(required=False, allow_null=True)
     notes = serializers.CharField(required=False, allow_blank=True)
+
+    def validate(self, data):
+        if data.get('delivery_type') == 'scheduled' and not data.get('scheduled_at'):
+            raise serializers.ValidationError({
+                'scheduled_at': 'scheduled_at is required when delivery_type is scheduled.'
+            })
+        return data
 
     def validate_address_id(self, value):
         from apps.accounts.models import Address
@@ -163,8 +189,8 @@ class AdminOrderDetailSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'order_number', 'customer_name', 'customer_email', 'customer_phone',
-            'status', 'payment_method', 'payment_status', 'delivery_address',
-            'items', 'subtotal', 'delivery_fee', 'total',
+            'status', 'payment_method', 'payment_status', 'receive_method', 'delivery_type', 'scheduled_at',   # ← new
+            'delivery_address', 'items', 'subtotal', 'delivery_fee', 'total',
             'tracking', 'notes', 'created_at', 'updated_at'
         ]
 

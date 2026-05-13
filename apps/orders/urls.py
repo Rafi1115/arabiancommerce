@@ -15,6 +15,7 @@ urlpatterns = [
     # Orders
     path('orders/', views.MyOrderListView.as_view(), name='my-orders'),
     path('orders/<int:pk>/', views.MyOrderDetailView.as_view(), name='my-order-detail'),
+    path('orders/<int:pk>/cancel/', views.CancelOrderView.as_view(), name='order-cancel'),
 ]
 
 # Admin URLs

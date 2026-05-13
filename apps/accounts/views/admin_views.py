@@ -1,7 +1,8 @@
 from rest_framework import generics, status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.core.utils.mixins import BaseResponseMixin
-from apps.accounts.serializers import AdminLoginSerializer, AdminChangePasswordSerializer
+from apps.accounts.serializers import AdminLoginSerializer, AdminChangePasswordSerializer, DeliveryZoneSerializer
+from apps.accounts.models import DeliveryZone
 
 
 class AdminLoginView(BaseResponseMixin, generics.GenericAPIView):
@@ -73,3 +74,38 @@ class AdminLogoutView(BaseResponseMixin, generics.GenericAPIView):
                 message="Invalid or expired refresh token.",
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
+
+
+# ─────────────────────────── DELIVERY ZONE MANAGEMENT ───────────────────────────
+
+class DeliveryZoneListCreateView(BaseResponseMixin, generics.ListCreateAPIView):
+    """
+    GET /api/admin/delivery-zones/ → List all delivery zones
+    POST /api/admin/delivery-zones/ → Create new delivery zone
+    """
+    serializer_class = DeliveryZoneSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = DeliveryZone.objects.all()
+
+    def get_queryset(self):
+        queryset = DeliveryZone.objects.all()
+        city = self.request.query_params.get('city')
+        is_active = self.request.query_params.get('is_active')
+        
+        if city:
+            queryset = queryset.filter(city__icontains=city)
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+            
+        return queryset.order_by('city', 'name')
+
+
+class DeliveryZoneDetailView(BaseResponseMixin, generics.RetrieveUpdateDestroyAPIView):
+    """
+    GET /api/admin/delivery-zones/<pk>/ → Get delivery zone details
+    PUT /api/admin/delivery-zones/<pk>/ → Update delivery zone
+    DELETE /api/admin/delivery-zones/<pk>/ → Delete delivery zone
+    """
+    serializer_class = DeliveryZoneSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = DeliveryZone.objects.all()

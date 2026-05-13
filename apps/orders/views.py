@@ -179,15 +179,20 @@ class CheckoutView(BaseResponseMixin, APIView):
             address = Address.objects.get(pk=data['address_id'], user__user=request.user)
 
             subtotal = cart.total
-            total = subtotal + DELIVERY_FEE
+            # Calculate delivery fee based on address zone
+            delivery_fee = address.delivery_zone.delivery_fee if address.delivery_zone else DELIVERY_FEE
+            total = subtotal + delivery_fee
 
             # Create order
             order = Order.objects.create(
                 user=request.user,
                 delivery_address=address,
                 payment_method=data['payment_method'],
+                receive_method=data.get('receive_method', 'home_delivery'),
+                delivery_type=data.get('delivery_type', 'today'),
+                scheduled_at=data.get('scheduled_at'),
                 subtotal=subtotal,
-                delivery_fee=DELIVERY_FEE,
+                delivery_fee=delivery_fee,
                 total=total,
                 notes=data.get('notes', ''),
             )
@@ -262,6 +267,42 @@ class MyOrderDetailView(BaseResponseMixin, APIView):
                 return self.not_found_response("Order not found")
             serializer = OrderDetailSerializer(order, context={'request': request})
             return self.success_response(data=serializer.data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class CancelOrderView(BaseResponseMixin, APIView):
+    """
+    POST /api/orders/<pk>/cancel/
+    Customer can only cancel if status is order_confirmed.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            try:
+                order = Order.objects.get(pk=pk, user=request.user)
+            except Order.DoesNotExist:
+                return self.not_found_response("Order not found")
+
+            if order.status != 'order_confirmed':
+                return self.bad_request_response(
+                    "Order cannot be cancelled at this stage"
+                )
+
+            order.status = 'cancelled'
+            order.save()
+
+            OrderTracking.objects.create(
+                order=order,
+                status='cancelled',
+                note='Cancelled by customer'
+            )
+
+            return self.success_response(
+                data=OrderDetailSerializer(order, context={'request': request}).data,
+                message="Order cancelled successfully"
+            )
         except Exception as exc:
             return self.handle_exception(exc)
 

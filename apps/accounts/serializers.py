@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import OTP, Address, UserProfile
+from .models import OTP, Address, UserProfile, DeliveryZone
 from .services.otp_service import generate_otp, send_otp_sms
 
 User = get_user_model()
@@ -294,9 +294,16 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         return instance
     
 class AddressSerializer(serializers.ModelSerializer):
+    delivery_zone_name = serializers.CharField(source='delivery_zone.name', read_only=True)
+    delivery_fee = serializers.DecimalField(source='delivery_zone.delivery_fee', max_digits=10, decimal_places=2, read_only=True)
+
     class Meta:
         model = Address
-        fields = ['id', 'title', 'full_address', 'is_default', 'created_at', 'updated_at']
+        fields = [
+            'id', 'title', 'full_address', 'city', 'area', 'latitude', 'longitude',
+            'delivery_zone', 'delivery_zone_name', 'delivery_fee',
+            'is_default', 'created_at', 'updated_at'
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
@@ -304,7 +311,10 @@ class AddressSerializer(serializers.ModelSerializer):
 class AddressCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ['title', 'full_address', 'is_default']
+        fields = [
+            'title', 'full_address', 'city', 'area', 'latitude', 'longitude',
+            'delivery_zone', 'is_default'
+        ]
 
     def create(self, validated_data):
         user_profile = self.context['request'].user.profile
@@ -315,7 +325,14 @@ class AddressCreateUpdateSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()  
         return instance
-
+class DeliveryZoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryZone
+        fields = [
+            'id', 'name', 'city', 'areas', 'delivery_fee', 'is_active',
+            'estimated_delivery_time', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
 # ── ACCOUNT MANAGEMENT ─────────────────────────────────────────────────────────
 
 class AccountSoftDeleteSerializer(serializers.Serializer):
