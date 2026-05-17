@@ -2092,7 +2092,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phone\": \"+971501234567\"\n}"
+              "raw": "{\n  \"phone\": \"+971501234567\",\n  \"name\": \"Rafi Al-Fayed\",\n  \"email\": \"rafi@example.com\",\n  \"address\": \"Villa 15, King Fahd Road, Riyadh\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/accounts/register/send-otp/",
@@ -3337,6 +3337,99 @@
           "response": []
         }
       ]
+    }
+  ]
+},
+{
+  "name": "4. Pages & Support",
+  "description": "Standard compliance policies and Frequently Asked Questions (FAQs) required by payment systems.",
+  "item": [
+    {
+      "name": "Get Privacy Policy",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/core/documents/privacy-policy/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "core",
+            "documents",
+            "privacy-policy",
+            ""
+          ]
+        },
+        "description": "Retrieve the dynamic Privacy Policy document. Highly critical for Stripe, Tabby, and Tamara compliance."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Terms & Conditions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/core/documents/terms-and-conditions/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "core",
+            "documents",
+            "terms-and-conditions",
+            ""
+          ]
+        },
+        "description": "Retrieve the dynamic Terms & Conditions document. Highly critical for Stripe, Tabby, and Tamara compliance."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Refund & Cancellation Policy",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/core/documents/refund-policy/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "core",
+            "documents",
+            "refund-policy",
+            ""
+          ]
+        },
+        "description": "Retrieve the dynamic Refund & Cancellation Policy document. Highly critical for Stripe, Tabby, and Tamara compliance."
+      },
+      "response": []
+    },
+    {
+      "name": "Get FAQs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/core/faqs/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "core",
+            "faqs",
+            ""
+          ]
+        },
+        "description": "Retrieve Frequently Asked Questions categorized and grouped."
+      },
+      "response": []
     }
   ]
 }
