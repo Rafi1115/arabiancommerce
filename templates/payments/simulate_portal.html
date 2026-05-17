@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabian Commerce - Payment Portal Simulator</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%);
+            --accent-gold: #e5c583;
+            --accent-gold-hover: #f3d79f;
+            --emerald-green: #2ec4b6;
+            --crimson-red: #e63946;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8f9fa;
+            --text-secondary: #e5e5e5;
+            --text-muted: #a0aab2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Glassmorphic Container */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 550px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(229, 197, 131, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Branding Header */
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-sim {
+            background: rgba(229, 197, 131, 0.15);
+            border: 1px solid rgba(229, 197, 131, 0.3);
+            color: var(--accent-gold);
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* Payment Gateway Selector visual indicator */
+        .gateway-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gateway-icon {
+            font-size: 1.8rem;
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+
+        .gateway-icon.active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .gateway-icon.active.stripe {
+            color: #635bff;
+        }
+
+        .gateway-icon.active.tabby {
+            color: #35f5c5;
+        }
+
+        .gateway-icon.active.tamara {
+            color: #ffa800;
+        }
+
+        .gateway-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Order Details */
+        .order-info {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .value.amount {
+            font-size: 1.3rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        /* Simulated Options Button Layout */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #b89d60 100%);
+            color: #0b0c10;
+            box-shadow: 0 4px 15px rgba(229, 197, 131, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 197, 131, 0.5);
+            background: linear-gradient(135deg, var(--accent-gold-hover) 0%, #c9ae70 100%);
+        }
+
+        .btn-danger {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--crimson-red);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(230, 57, 70, 0.25);
+            transform: translateY(-1px);
+        }
+
+        /* Success & Failure Animations Overlay */
+        .overlay-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .overlay-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .status-icon {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            transform: scale(0.5);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .overlay-screen.active .status-icon {
+            transform: scale(1);
+        }
+
+        .status-icon.success {
+            color: var(--emerald-green);
+        }
+
+        .status-icon.failure {
+            color: var(--crimson-red);
+        }
+
+        .status-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .status-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card">
+        
+        <!-- Main Simulation Card Screen -->
+        <div id="payment-form">
+            <div class="header">
+                <div class="logo">Arabian Commerce</div>
+                <div class="badge-sim"><i class="fa-solid fa-flask"></i> Sandbox Portal Simulator</div>
+            </div>
+
+            <!-- Dynamic Payment Gateway Indicator -->
+            <div class="gateway-indicator">
+                <i class="gateway-icon fa-brands fa-stripe stripe" id="icon-card"></i>
+                <i class="gateway-icon fa-solid fa-receipt tabby" id="icon-tabby"></i>
+                <i class="gateway-icon fa-solid fa-file-invoice-dollar tamara" id="icon-tamara"></i>
+                <span class="gateway-name" id="gateway-label">Payment Gateway</span>
+            </div>
+
+            <!-- Receipt Info Box -->
+            <div class="order-info">
+                <div class="info-row">
+                    <span class="label">Order Number</span>
+                    <span class="value" id="val-order-no">PRM-XXXXXX</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Customer Phone</span>
+                    <span class="value" id="val-phone">+971 50 XXX XXXX</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Payment Type</span>
+                    <span class="value" id="val-method">Online Payment</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Total Amount</span>
+                    <span class="value amount" id="val-amount">0.00 AED</span>
+                </div>
+            </div>
+
+            <!-- Operational simulated actions -->
+            <div class="btn-group">
+                <button onclick="processSimulatedPayment('paid')" class="btn btn-success">
+                    <i class="fa-solid fa-shield-checkmark"></i> Authorize & Settle Payment
+                </button>
+                <button onclick="processSimulatedPayment('failed')" class="btn btn-danger">
+                    <i class="fa-solid fa-xmark"></i> Decline & Cancel Payment
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. Processing Overlay Screen -->
+        <div class="overlay-screen" id="screen-loading">
+            <div class="spinner"></div>
+            <h3 class="status-title">Processing Transaction...</h3>
+            <p class="status-desc" style="color: var(--text-muted);">Securing connection with merchant gateway and verifying credentials.</p>
+        </div>
+
+        <!-- 2. Success Overlay Screen -->
+        <div class="overlay-screen" id="screen-success">
+            <div class="status-icon success"><i class="fa-solid fa-circle-check"></i></div>
+            <h3 class="status-title">Payment Successful!</h3>
+            <p class="status-desc" id="success-message">Your transaction was settled successfully. The order has been marked as confirmed and processing.</p>
+            <button onclick="closeSimulator()" class="btn btn-success" style="max-width: 200px;">
+                Done
+            </button>
+        </div>
+
+        <!-- 3. Failure Overlay Screen -->
+        <div class="overlay-screen" id="screen-failure">
+            <div class="status-icon failure"><i class="fa-solid fa-circle-xmark"></i></div>
+            <h3 class="status-title">Payment Failed</h3>
+            <p class="status-desc">The card issuer declined the payment or installment authorization was rejected.</p>
+            <button onclick="closeSimulator()" class="btn btn-danger" style="max-width: 200px;">
+                Back
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Load data dynamically from contextual attributes parsed inside the view
+        const transactionData = {
+            id: "{{ transaction.transaction_id }}",
+            orderNumber: "{{ transaction.order.order_number }}",
+            amount: "{{ transaction.amount }}",
+            method: "{{ transaction.payment_method }}",
+            phone: "{{ transaction.order.user.phone|default:'+971501234567' }}"
+        };
+
+        // Render variables dynamically on the UI
+        document.getElementById('val-order-no').textContent = transactionData.orderNumber;
+        document.getElementById('val-amount').textContent = `${parseFloat(transactionData.amount).toFixed(2)} ${transactionData.method === 'tamara' ? 'SAR' : 'AED'}`;
+        document.getElementById('val-phone').textContent = transactionData.phone;
+        
+        let labelText = "Online Card Payment";
+        if (transactionData.method === 'card') {
+            document.getElementById('icon-card').classList.add('active');
+            labelText = "Stripe Secured Payment";
+        } else if (transactionData.method === 'tabby') {
+            document.getElementById('icon-tabby').classList.add('active');
+            labelText = "Tabby 4-Month Installments";
+        } else if (transactionData.method === 'tamara') {
+            document.getElementById('icon-tamara').classList.add('active');
+            labelText = "Tamara Installment Plan";
+        }
+        document.getElementById('val-method').textContent = labelText;
+        document.getElementById('gateway-label').textContent = labelText;
+
+        // Callback Process simulation
+        function processSimulatedPayment(targetStatus) {
+            // Show loading screen
+            document.getElementById('screen-loading').classList.add('active');
+
+            // Send actual POST call back to server to update transaction status & Order status
+            fetch('/api/payments/simulate-callback/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    transaction_id: transactionData.id,
+                    status: targetStatus
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Callback update failed.');
+            })
+            .then(data => {
+                // Remove loading
+                document.getElementById('screen-loading').classList.remove('active');
+                
+                if (targetStatus === 'paid') {
+                    document.getElementById('screen-success').classList.add('active');
+                } else {
+                    document.getElementById('screen-failure').classList.add('active');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Simulated callback request failed. Please check backend server log.");
+                document.getElementById('screen-loading').classList.remove('active');
+            });
+        }
+
+        function closeSimulator() {
+            // Simply close window or navigate back
+            window.close();
+            // Fallback redirect
+            window.location.href = `/api/orders/orders/`;
+        }
+    </script>
+</body>
+</html>

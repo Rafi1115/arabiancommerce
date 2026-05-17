@@ -2939,7 +2939,7 @@
       "name": "Checkout & Orders",
       "item": [
         {
-          "name": "Checkout Cart",
+          "name": "Checkout - Cash on Delivery",
           "event": [
             {
               "listen": "test",
@@ -2983,7 +2983,178 @@
                 ""
               ]
             },
-            "description": "Convert items in cart to a dynamic receipt order. Options: receive_method (home_delivery or receive_in_market), delivery_type (today or scheduled), scheduled_at (required when delivery_type is scheduled). Saves `order_id` environment variable."
+            "description": "Convert items in cart to a dynamic receipt order via Cash on Delivery."
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout - Stripe (Card)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                  "}",
+                  "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
+                  "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
+                  "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
+                  "}",
+                  "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
+                  "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
+                  "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"card\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/checkout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "checkout",
+                ""
+              ]
+            },
+            "description": "Convert items in cart to a dynamic receipt order via Stripe online card payment."
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout - Tabby (Installments)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                  "}",
+                  "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
+                  "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
+                  "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
+                  "}",
+                  "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
+                  "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
+                  "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"tabby\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/checkout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "checkout",
+                ""
+              ]
+            },
+            "description": "Convert items in cart to a dynamic receipt order via Tabby installment payment."
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout - Tamara (BNPL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                  "}",
+                  "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
+                  "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
+                  "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
+                  "}",
+                  "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
+                  "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
+                  "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"tamara\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/checkout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "checkout",
+                ""
+              ]
+            },
+            "description": "Convert items in cart to a dynamic receipt order via Tamara BNPL installment payment."
           },
           "response": []
         },
@@ -3101,6 +3272,71 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "3. Payments & Webhooks",
+      "item": [
+        {
+          "name": "Simulate Payment Callback (Succeed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_id\": \"{{transaction_id}}\",\n  \"status\": \"paid\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/simulate-callback/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "simulate-callback",
+                ""
+              ]
+            },
+            "description": "Simulate a successful payment webhook callback for the current `transaction_id`. Marks order as paid."
+          },
+          "response": []
+        },
+        {
+          "name": "Simulate Payment Callback (Decline)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_id\": \"{{transaction_id}}\",\n  \"status\": \"failed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/simulate-callback/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "simulate-callback",
+                ""
+              ]
+            },
+            "description": "Simulate a failed payment webhook callback for the current `transaction_id`. Marks order as failed."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
@@ -3179,6 +3415,16 @@
     {
       "key": "banner_id",
       "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "your_transaction_id",
+      "type": "string"
+    },
+    {
+      "key": "payment_url",
+      "value": "your_payment_url",
       "type": "string"
     }
   ]

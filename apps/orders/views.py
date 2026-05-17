@@ -184,10 +184,11 @@ class CheckoutView(BaseResponseMixin, APIView):
             total = subtotal + delivery_fee
 
             # Create order
+            payment_method = data['payment_method']
             order = Order.objects.create(
                 user=request.user,
                 delivery_address=address,
-                payment_method=data['payment_method'],
+                payment_method=payment_method,
                 receive_method=data.get('receive_method', 'home_delivery'),
                 delivery_type=data.get('delivery_type', 'today'),
                 scheduled_at=data.get('scheduled_at'),
@@ -211,19 +212,40 @@ class CheckoutView(BaseResponseMixin, APIView):
                     subtotal=cart_item.subtotal,
                 )
 
+            # Initialize payment transaction if online payment chosen
+            transaction = None
+            if payment_method == 'card':
+                from apps.payments.services.stripe_service import StripeService
+                transaction = StripeService.create_checkout_session(order)
+            elif payment_method == 'tabby':
+                from apps.payments.services.tabby_service import TabbyService
+                transaction = TabbyService.create_checkout_session(order)
+            elif payment_method == 'tamara':
+                from apps.payments.services.tamara_service import TamaraService
+                transaction = TamaraService.create_checkout_session(order)
+
             # Initial tracking entry
+            tracking_note = 'Order placed successfully'
+            if payment_method != 'cash' and transaction:
+                tracking_note = f"Order checkout started. Awaiting payment via {payment_method.upper()}."
+
             OrderTracking.objects.create(
                 order=order,
                 status='order_confirmed',
-                note='Order placed successfully'
+                note=tracking_note
             )
 
             # Clear cart
             cart.items.all().delete()
 
+            res_data = OrderDetailSerializer(order, context={'request': request}).data
+            if payment_method != 'cash' and transaction:
+                res_data['payment_url'] = transaction.payment_url
+                res_data['transaction_id'] = transaction.transaction_id
+
             return self.created_response(
-                data=OrderDetailSerializer(order, context={'request': request}).data,
-                message="Order placed successfully"
+                data=res_data,
+                message="Order placed successfully. Please complete payment." if payment_method != 'cash' else "Order placed successfully"
             )
         except Exception as exc:
             return self.handle_exception(exc)
