@@ -1,0 +1,3185 @@
+{
+  "info": {
+    "_postman_id": "71cebed1-612d-41dd-a9ca-62cf7f4c69bc",
+    "name": "Arabian Commerce API - Ultimate Testing Flow",
+    "description": "Comprehensive Postman collection for Arabian Commerce, featuring a Location-Based Delivery E-commerce system. Organised logically by Admin Panel and Customer App flows, with built-in scripts to auto-refresh Bearer tokens and track variables like Product IDs, Order IDs, and Address IDs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Admin Panel",
+      "description": "Endpoints dedicated to Dashboard statistics, Delivery Zone settings, Product & Catalog controls, Inventory, and Order processing. Require Admin Bearer Token.",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Admin Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.access) {",
+                      "    pm.environment.set(\"admin_token\", jsonData.data.access);",
+                      "    pm.collectionVariables.set(\"admin_token\", jsonData.data.access);",
+                      "    console.log(\"Admin Token successfully captured and saved!\");",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"yourpassword\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/login/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "Login endpoint for admins. Automatically captures JWT token and sets it as environment/collection variable `admin_token`."
+              },
+              "response": []
+            },
+            {
+              "name": "Admin Change Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"current_password\": \"yourpassword\",\n  \"new_password\": \"newsecurepassword\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/change-password/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "change-password",
+                    ""
+                  ]
+                },
+                "description": "Change admin password. Requires active admin Bearer token."
+              },
+              "response": []
+            },
+            {
+              "name": "Admin Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh\": \"your_refresh_token_here\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/logout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "logout",
+                    ""
+                  ]
+                },
+                "description": "Blacklist the refresh token to logout securely."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Dashboard Stats",
+          "item": [
+            {
+              "name": "Stats Overview",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/dashboard/admin/dashboard/stats/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "dashboard",
+                    "admin",
+                    "dashboard",
+                    "stats",
+                    ""
+                  ]
+                },
+                "description": "Get general system-wide metrics (total orders, total revenue, customer count, etc.)"
+              },
+              "response": []
+            },
+            {
+              "name": "Sales Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/dashboard/admin/dashboard/sales/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "dashboard",
+                    "admin",
+                    "dashboard",
+                    "sales",
+                    ""
+                  ]
+                },
+                "description": "Retrieve daily or monthly sales metrics."
+              },
+              "response": []
+            },
+            {
+              "name": "Top Inventory",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/dashboard/admin/dashboard/top-inventory/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "dashboard",
+                    "admin",
+                    "dashboard",
+                    "top-inventory",
+                    ""
+                  ]
+                },
+                "description": "Retrieve top selling products alongside low-stock alert items."
+              },
+              "response": []
+            },
+            {
+              "name": "Recent Orders",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/dashboard/admin/dashboard/recent-orders/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "dashboard",
+                    "admin",
+                    "dashboard",
+                    "recent-orders",
+                    ""
+                  ]
+                },
+                "description": "Fetch list of most recently submitted orders."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Delivery Zones",
+          "item": [
+            {
+              "name": "List Delivery Zones",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/delivery-zones/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "delivery-zones",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "city",
+                      "value": "Dubai",
+                      "disabled": true
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Retrieve all delivery zones in the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Delivery Zone",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"delivery_zone_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"delivery_zone_id\", jsonData.data.id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Downtown Dubai\",\n  \"city\": \"Dubai\",\n  \"delivery_fee\": \"15.00\",\n  \"is_active\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/delivery-zones/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "delivery-zones",
+                    ""
+                  ]
+                },
+                "description": "Create a new location-based delivery zone. Automatically saves the resulting `delivery_zone_id`."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Delivery Zone Detail",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/delivery-zones/{{delivery_zone_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "delivery-zones",
+                    "{{delivery_zone_id}}",
+                    ""
+                  ]
+                },
+                "description": "Fetch details of a single delivery zone."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Delivery Zone",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Downtown Dubai Premium\",\n  \"city\": \"Dubai\",\n  \"delivery_fee\": \"18.00\",\n  \"is_active\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/delivery-zones/{{delivery_zone_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "delivery-zones",
+                    "{{delivery_zone_id}}",
+                    ""
+                  ]
+                },
+                "description": "Update details of a delivery zone."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Delivery Zone",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/delivery-zones/{{delivery_zone_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "delivery-zones",
+                    "{{delivery_zone_id}}",
+                    ""
+                  ]
+                },
+                "description": "Remove a delivery zone from the system."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Products (Admin)",
+          "item": [
+            {
+              "name": "List Products",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/products/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "products",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "disabled": true
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "10",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "meat",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Fetch all products (both active and inactive) with custom pagination, filtering by category, search, or status."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Product",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"product_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"product_id\", jsonData.data.id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Fresh Camel Meat\",\n  \"category_id\": 1,\n  \"price\": \"45.00\",\n  \"description\": \"Premium high quality fresh camel meat from local farms\",\n  \"initial_stock\": 100\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/products/create/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "products",
+                    "create",
+                    ""
+                  ]
+                },
+                "description": "Create a new product. Submits JSON or multipart form. Sets `product_id` environment variable automatically."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Product Detail",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "products",
+                    "{{product_id}}",
+                    ""
+                  ]
+                },
+                "description": "Get detailed administration metrics/fields for a specific product."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Product",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Fresh Camel Meat (Premium)\",\n  \"price\": \"49.99\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/update/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "products",
+                    "{{product_id}}",
+                    "update",
+                    ""
+                  ]
+                },
+                "description": "Update specific parameters of a product."
+              },
+              "response": []
+            },
+            {
+              "name": "Toggle Product Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/toggle-status/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "products",
+                    "{{product_id}}",
+                    "toggle-status",
+                    ""
+                  ]
+                },
+                "description": "Toggles active/inactive status. Deactivated products do not show in user feeds."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Product",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/delete/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "products",
+                    "{{product_id}}",
+                    "delete",
+                    ""
+                  ]
+                },
+                "description": "Delete a product permanently."
+              },
+              "response": []
+            },
+            {
+              "name": "Manage Product Cut Types",
+              "item": [
+                {
+                  "name": "Get Linked Cut Types",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/cut-types/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "products",
+                        "admin",
+                        "products",
+                        "{{product_id}}",
+                        "cut-types",
+                        ""
+                      ]
+                    },
+                    "description": "Fetch all cut types linked to this product."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Link Cut Type",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"cut_type_id\": 1\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/cut-types/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "products",
+                        "admin",
+                        "products",
+                        "{{product_id}}",
+                        "cut-types",
+                        ""
+                      ]
+                    },
+                    "description": "Associate a global cut type option with this product."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Unlink Cut Type",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/cut-types/{{product_cut_type_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "products",
+                        "admin",
+                        "products",
+                        "{{product_id}}",
+                        "cut-types",
+                        "{{product_cut_type_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Unlinks the cut type mapping from the product."
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Product Images",
+              "item": [
+                {
+                  "name": "Get Product Images",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/images/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "products",
+                        "admin",
+                        "products",
+                        "{{product_id}}",
+                        "images",
+                        ""
+                      ]
+                    },
+                    "description": "Retrieve all uploaded images for the product."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Upload Product Images",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "images",
+                          "type": "file",
+                          "src": []
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/images/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "products",
+                        "admin",
+                        "products",
+                        "{{product_id}}",
+                        "images",
+                        ""
+                      ]
+                    },
+                    "description": "Upload multiple product images via multipart form data."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete Product Image",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/images/{{product_image_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "products",
+                        "admin",
+                        "products",
+                        "{{product_id}}",
+                        "images",
+                        "{{product_image_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Delete a product image from the system and storage."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Set Primary Product Image",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/images/{{product_image_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "products",
+                        "admin",
+                        "products",
+                        "{{product_id}}",
+                        "images",
+                        "{{product_image_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Set a specific product image as the primary image."
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cut Types (Admin)",
+          "item": [
+            {
+              "name": "List Global Cut Types",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/cut-types/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "cut-types",
+                    ""
+                  ]
+                },
+                "description": "Fetch all global cut type configurations (active and inactive)."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Global Cut Type",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"cut_type_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"cut_type_id\", jsonData.data.id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Chop Size\",\n  \"status\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/cut-types/create/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "cut-types",
+                    "create",
+                    ""
+                  ]
+                },
+                "description": "Create a new global cut type."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Global Cut Type Detail",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/cut-types/{{cut_type_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "cut-types",
+                    "{{cut_type_id}}",
+                    ""
+                  ]
+                },
+                "description": "Get detailed attributes for a single cut type."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Global Cut Type",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Finely Chopped\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/cut-types/{{cut_type_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "cut-types",
+                    "{{cut_type_id}}",
+                    ""
+                  ]
+                },
+                "description": "Update properties of a global cut type."
+              },
+              "response": []
+            },
+            {
+              "name": "Toggle Cut Type Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/cut-types/{{cut_type_id}}/toggle-status/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "cut-types",
+                    "{{cut_type_id}}",
+                    "toggle-status",
+                    ""
+                  ]
+                },
+                "description": "Toggles active/inactive status."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Global Cut Type",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/cut-types/{{cut_type_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "cut-types",
+                    "{{cut_type_id}}",
+                    ""
+                  ]
+                },
+                "description": "Permanently delete a cut type option."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Categories & Packaging (Admin)",
+          "item": [
+            {
+              "name": "Categories",
+              "item": [
+                {
+                  "name": "List Categories",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/categories/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "categories",
+                        ""
+                      ]
+                    },
+                    "description": "Retrieve list of all categories including inactive ones."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create Category",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "var jsonData = pm.response.json();",
+                          "if (jsonData && jsonData.data && jsonData.data.id) {",
+                          "    pm.environment.set(\"category_id\", jsonData.data.id);",
+                          "    pm.collectionVariables.set(\"category_id\", jsonData.data.id);",
+                          "}"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Camel Meat\",\n  \"status\": true\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/categories/create/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "categories",
+                        "create",
+                        ""
+                      ]
+                    },
+                    "description": "Create a new category. Submits JSON or multipart. Automatically captures `category_id`."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Category Detail",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/categories/{{category_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "categories",
+                        "{{category_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Get detailed attributes for a single category."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update Category",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Camel Meat & Cuts\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/categories/{{category_id}}/update/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "categories",
+                        "{{category_id}}",
+                        "update",
+                        ""
+                      ]
+                    },
+                    "description": "Update specific parameters of a category."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Toggle Category Status",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/categories/{{category_id}}/toggle-status/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "categories",
+                        "{{category_id}}",
+                        "toggle-status",
+                        ""
+                      ]
+                    },
+                    "description": "Toggles active/inactive status."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete Category",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/categories/{{category_id}}/delete/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "categories",
+                        "{{category_id}}",
+                        "delete",
+                        ""
+                      ]
+                    },
+                    "description": "Permanently delete a category."
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "SubCategories",
+              "item": [
+                {
+                  "name": "List SubCategories",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/subcategories/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "subcategories",
+                        ""
+                      ]
+                    },
+                    "description": "Retrieve list of all subcategories."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create SubCategory",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "var jsonData = pm.response.json();",
+                          "if (jsonData && jsonData.data && jsonData.data.id) {",
+                          "    pm.environment.set(\"subcategory_id\", jsonData.data.id);",
+                          "    pm.collectionVariables.set(\"subcategory_id\", jsonData.data.id);",
+                          "}"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"category\": 1,\n  \"name\": \"Fresh Cuts\",\n  \"status\": true\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/subcategories/create/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "subcategories",
+                        "create",
+                        ""
+                      ]
+                    },
+                    "description": "Create a new subcategory. Automatically captures `subcategory_id`."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get SubCategory Detail",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/subcategories/{{subcategory_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "subcategories",
+                        "{{subcategory_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Fetch detailed subcategory attributes."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update SubCategory",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Fresh Camel Cuts\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/subcategories/{{subcategory_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "subcategories",
+                        "{{subcategory_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Modify specific attributes of a subcategory."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Toggle SubCategory Status",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/subcategories/{{subcategory_id}}/toggle-status/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "subcategories",
+                        "{{subcategory_id}}",
+                        "toggle-status",
+                        ""
+                      ]
+                    },
+                    "description": "Toggles active/inactive status."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete SubCategory",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/subcategories/{{subcategory_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "subcategories",
+                        "{{subcategory_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Permanently delete a subcategory."
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Packaging Types",
+              "item": [
+                {
+                  "name": "List Packaging Types",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/packaging-types/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "packaging-types",
+                        ""
+                      ]
+                    },
+                    "description": "Retrieve all packaging types."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Create Packaging Type",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "var jsonData = pm.response.json();",
+                          "if (jsonData && jsonData.data && jsonData.data.id) {",
+                          "    pm.environment.set(\"packaging_type_id\", jsonData.data.id);",
+                          "    pm.collectionVariables.set(\"packaging_type_id\", jsonData.data.id);",
+                          "}"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Vacuum Sealed Box\",\n  \"status\": true\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/packaging-types/create/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "packaging-types",
+                        "create",
+                        ""
+                      ]
+                    },
+                    "description": "Create a new packaging type configuration. Captures `packaging_type_id`."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Packaging Type Detail",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "packaging-types",
+                        "{{packaging_type_id}}",
+                        ""
+                      ]
+                    },
+                    "description": "Fetch detailed parameters of a packaging type."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Update Packaging Type",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Airless Premium Box\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/update/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categories",
+                    "admin",
+                    "packaging-types",
+                    "{{packaging_type_id}}",
+                    "update",
+                    ""
+                  ]
+                },
+                "description": "Modify parameters of a packaging type."
+              },
+              "response": []
+            },
+            {
+              "name": "Toggle Packaging Type Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/toggle-status/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categories",
+                    "admin",
+                    "packaging-types",
+                    "{{packaging_type_id}}",
+                    "toggle-status",
+                    ""
+                  ]
+                },
+                "description": "Toggles active/inactive status."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Packaging Type",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/delete/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categories",
+                    "admin",
+                    "packaging-types",
+                    "{{packaging_type_id}}",
+                    "delete",
+                    ""
+                  ]
+                },
+                "description": "Remove a packaging type configuration permanently."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Inventory (Admin)",
+      "item": [
+        {
+          "name": "List Inventory Levels",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/products/admin/inventory/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "admin",
+                "inventory",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "camel",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch inventory stocks and status levels for all products."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Inventory Stock",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stock\": 150,\n  \"low_stock_threshold\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/products/admin/inventory/{{product_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "admin",
+                "inventory",
+                "{{product_id}}",
+                ""
+              ]
+            },
+            "description": "Modify the quantity of items in stock and set low stock warning threshold limits."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders (Admin)",
+      "item": [
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/admin/orders/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "admin",
+                "orders",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "order_confirmed",
+                  "disabled": true
+                },
+                {
+                  "key": "payment_method",
+                  "value": "cash",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "John",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch all checkout orders."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/admin/orders/{{order_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "admin",
+                "orders",
+                "{{order_id}}",
+                ""
+              ]
+            },
+            "description": "Retrieve comprehensive receipt structure of an order for admin views."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\",\n  \"note\": \"Order is packaged and ready to ship out\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/admin/orders/{{order_id}}/update-status/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "admin",
+                "orders",
+                "{{order_id}}",
+                "update-status",
+                ""
+              ]
+            },
+            "description": "Update the tracking state of an order (e.g. order_confirmed -> processing -> in_transit -> delivered). Captures a log tracking note."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Banners (Admin)",
+      "item": [
+        {
+          "name": "List Banners (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/banners/admin/list/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "banners",
+                "admin",
+                "list",
+                ""
+              ]
+            },
+            "description": "Fetch all banners (active and inactive)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Banner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set(\"banner_id\", jsonData.data.id);",
+                  "    pm.collectionVariables.set(\"banner_id\", jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Eid Special Deals",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "is_active",
+                  "value": "true",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/banners/admin/create/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "banners",
+                "admin",
+                "create",
+                ""
+              ]
+            },
+            "description": "Upload a marketing image/banner for home screen widgets."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Banner",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Eid Ultimate Special Deals",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/banners/admin/{{banner_id}}/update/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "banners",
+                "admin",
+                "{{banner_id}}",
+                "update",
+                ""
+              ]
+            },
+            "description": "Modify dynamic details of a banner."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Banner",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/banners/admin/{{banner_id}}/delete/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "banners",
+                "admin",
+                "{{banner_id}}",
+                "delete",
+                ""
+              ]
+            },
+            "description": "Permanently remove a banner."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+},
+{
+  "name": "2. Customer App",
+  "description": "Customer flows: Authentication via OTP, Profile information, Address management with location-based pricing, browsing active catalog items, managing Cart operations, and checking out Orders.",
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register - Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+971501234567\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/register/send-otp/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "register",
+                "send-otp",
+                ""
+              ]
+            },
+            "description": "Step 1 of customer registration. Sends a verification OTP to the target phone number."
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.access) {",
+                  "    pm.environment.set(\"customer_token\", jsonData.data.access);",
+                  "    pm.collectionVariables.set(\"customer_token\", jsonData.data.access);",
+                  "    console.log(\"Customer Token successfully captured and saved!\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+971501234567\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/register/verify-otp/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "register",
+                "verify-otp",
+                ""
+              ]
+            },
+            "description": "Step 2 of customer registration. Verifies OTP, activates the account, and automatically captures the resulting customer Bearer token."
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+971501234567\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/login/send-otp/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "login",
+                "send-otp",
+                ""
+              ]
+            },
+            "description": "Step 1 of customer login. Sends a secure login OTP to the registered phone number."
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.access) {",
+                  "    pm.environment.set(\"customer_token\", jsonData.data.access);",
+                  "    pm.collectionVariables.set(\"customer_token\", jsonData.data.access);",
+                  "    console.log(\"Customer Token successfully captured and saved!\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+971501234567\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/login/verify-otp/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "login",
+                "verify-otp",
+                ""
+              ]
+            },
+            "description": "Step 2 of customer login. Validates OTP and sets the customer Bearer token variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+971501234567\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/resend-otp/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "resend-otp",
+                ""
+              ]
+            },
+            "description": "Request another OTP SMS message."
+          },
+          "response": []
+        },
+        {
+          "name": "Token Refresh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"your_refresh_token_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/token/refresh/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "token",
+                "refresh",
+                ""
+              ]
+            },
+            "description": "Obtain a fresh access token using a refresh token."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"your_refresh_token_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/logout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "logout",
+                ""
+              ]
+            },
+            "description": "Blacklist customer refresh token and logout."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts/profile/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "profile",
+                ""
+              ]
+            },
+            "description": "Fetch logged-in customer's profile details."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "John Doe",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "johndoe@example.com",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/profile/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "profile",
+                ""
+              ]
+            },
+            "description": "Partially update specific fields on user profile (name, email, image)."
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate My Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirm\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/account/delete/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "account",
+                "delete",
+                ""
+              ]
+            },
+            "description": "Perform soft-delete to deactivate the customer's account."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "List Addresses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts/addresses/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "addresses",
+                ""
+              ]
+            },
+            "description": "Get all saved addresses. Shows delivery fees and zones assigned."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set(\"address_id\", jsonData.data.id);",
+                  "    pm.collectionVariables.set(\"address_id\", jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Home\",\n  \"full_address\": \"Villa 123, Dubai Marina, Dubai, UAE\",\n  \"city\": \"Dubai\",\n  \"area\": \"Marina\",\n  \"latitude\": 25.078,\n  \"longitude\": 55.14,\n  \"is_default\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/addresses/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "addresses",
+                ""
+              ]
+            },
+            "description": "Add new delivery address. Automatically determines delivery_zone based on coordinate distance or text match, setting the variable `address_id`."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Address",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My Sweet Home\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts/addresses/{{address_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "addresses",
+                "{{address_id}}",
+                ""
+              ]
+            },
+            "description": "Modify details of a specific address."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Address",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts/addresses/{{address_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "addresses",
+                "{{address_id}}",
+                ""
+              ]
+            },
+            "description": "Delete a specific address."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Browse & Banners",
+      "item": [
+        {
+          "name": "Get Active Banners",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/banners/list/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "banners",
+                "list",
+                ""
+              ]
+            },
+            "description": "Fetch only active marketing slides."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories/list/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "list",
+                ""
+              ]
+            },
+            "description": "Fetch active product category listings."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active SubCategories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories/sub/list/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "sub",
+                "list",
+                ""
+              ]
+            },
+            "description": "Fetch list of active subcategories."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Packaging Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories/packaging-types/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "packaging-types",
+                ""
+              ]
+            },
+            "description": "Fetch all active box/packaging selections."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.length > 0) {",
+                  "    pm.environment.set(\"product_id\", jsonData.data[0].id);",
+                  "    pm.collectionVariables.set(\"product_id\", jsonData.data[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/list/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "list",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "meat",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Browse active catalogue items. Captures first product to `product_id`."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/detail/{{product_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "detail",
+                "{{product_id}}",
+                ""
+              ]
+            },
+            "description": "Get comprehensive detail overview of a specific product (includes linked cut/packaging profiles)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Cut Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/cut-types/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "cut-types",
+                ""
+              ]
+            },
+            "description": "Fetch active global cut choices."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart Operations",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/cart/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "cart",
+                ""
+              ]
+            },
+            "description": "Retrieve current items in user shopping basket with dynamic subtotals and delivery charges calculated from default address."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Item to Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
+                  "    pm.environment.set(\"cart_item_id\", jsonData.data.items[0].id);",
+                  "    pm.collectionVariables.set(\"cart_item_id\", jsonData.data.items[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": {{product_id}},\n  \"quantity\": 2,\n  \"cut_type_id\": null,\n  \"packaging_type_id\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/cart/add/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "cart",
+                "add",
+                ""
+              ]
+            },
+            "description": "Add product items to basket. Optional parameters are `cut_type_id` and `packaging_type_id`. Sets variable `cart_item_id`."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart Item Quantity",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 4\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/cart/items/{{cart_item_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "cart",
+                "items",
+                "{{cart_item_id}}",
+                ""
+              ]
+            },
+            "description": "Change the quantity of an item in the cart."
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Item from Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/cart/items/{{cart_item_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "cart",
+                "items",
+                "{{cart_item_id}}",
+                ""
+              ]
+            },
+            "description": "Delete specific item mapping from cart."
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/cart/clear/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "cart",
+                "clear",
+                ""
+              ]
+            },
+            "description": "Wipe out all items inside basket."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Checkout & Orders",
+      "item": [
+        {
+          "name": "Checkout Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"cash\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/checkout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "checkout",
+                ""
+              ]
+            },
+            "description": "Convert items in cart to a dynamic receipt order. Options: receive_method (home_delivery or receive_in_market), delivery_type (today or scheduled), scheduled_at (required when delivery_type is scheduled). Saves `order_id` environment variable."
+          },
+          "response": []
+        },
+        {
+          "name": "My Active Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/orders/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "orders",
+                ""
+              ]
+            },
+            "description": "Get current active orders (excludes completed/cancelled)."
+          },
+          "response": []
+        },
+        {
+          "name": "My Order History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/orders/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "orders",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "mode",
+                  "value": "history"
+                }
+              ]
+            },
+            "description": "Retrieve completed/cancelled orders history."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/orders/{{order_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "orders",
+                "{{order_id}}",
+                ""
+              ]
+            },
+            "description": "Retrieve status details and logistics tracking steps for a specific order."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/orders/{{order_id}}/cancel/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "orders",
+                "{{order_id}}",
+                "cancel",
+                ""
+              ]
+            },
+            "description": "Cancel the order. Only possible if the order's tracking status is still `order_confirmed`."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_admin_token",
+      "type": "string"
+    },
+    {
+      "key": "customer_token",
+      "value": "your_customer_token",
+      "type": "string"
+    },
+    {
+      "key": "delivery_zone_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "product_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "product_cut_type_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "product_image_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "cut_type_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "category_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "subcategory_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "packaging_type_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "address_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "cart_item_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "banner_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}
