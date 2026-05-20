@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -25,7 +26,8 @@ from .serializers import (
 class ProductListView(BaseResponseMixin, APIView):
     """
     GET /api/products/                         → all active products
-    GET /api/products/?category_id=<id>        → filter by category
+    GET /api/products/?category_id=<id>        → filter by category or by subcategory id
+    GET /api/products/?subcategory_id=<id>     → filter by subcategory only
     GET /api/products/?search=<q>              → search by name
     """
     permission_classes = [AllowAny]
@@ -34,10 +36,13 @@ class ProductListView(BaseResponseMixin, APIView):
         try:
             products = Product.objects.filter(status=True).select_related('category', 'inventory')
             category_id = request.query_params.get('category_id')
+            subcategory_id = request.query_params.get('subcategory_id')
             search = request.query_params.get('search')
 
-            if category_id:
-                products = products.filter(category_id=category_id)
+            if subcategory_id:
+                products = products.filter(subcategory_id=subcategory_id)
+            elif category_id:
+                products = products.filter(Q(category_id=category_id) | Q(subcategory_id=category_id))
             if search:
                 products = products.filter(name__icontains=search)
 
@@ -75,6 +80,8 @@ class ProductDetailView(BaseResponseMixin, APIView):
 class AdminProductListView(BaseResponseMixin, APIView):
     """
     GET /api/admin/products/   → all products with pagination
+    GET /api/admin/products/?category_id=<id>        → filter by category or subcategory id
+    GET /api/admin/products/?subcategory_id=<id>     → filter by subcategory only
     """
     permission_classes = [IsAdminUser]
 
@@ -82,11 +89,14 @@ class AdminProductListView(BaseResponseMixin, APIView):
         try:
             products = Product.objects.select_related('category', 'inventory').all()
             category_id = request.query_params.get('category_id')
+            subcategory_id = request.query_params.get('subcategory_id')
             search = request.query_params.get('search')
             status = request.query_params.get('status')
 
-            if category_id:
-                products = products.filter(category_id=category_id)
+            if subcategory_id:
+                products = products.filter(subcategory_id=subcategory_id)
+            elif category_id:
+                products = products.filter(Q(category_id=category_id) | Q(subcategory_id=category_id))
             if search:
                 products = products.filter(name__icontains=search)
             if status is not None:
