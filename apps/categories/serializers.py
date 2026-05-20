@@ -44,7 +44,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'image', 'item_count', 'status', 'subcategories', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'subtitle', 'image', 'item_count', 'status', 'subcategories', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at', 'item_count']
 
 
@@ -53,7 +53,7 @@ class CategoryCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['name', 'image', 'status']
+        fields = ['name', 'subtitle', 'image', 'status']
 
     def validate_name(self, value):
         if Category.objects.filter(name__iexact=value).exists():
@@ -66,7 +66,7 @@ class CategoryUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['name', 'image', 'status']
+        fields = ['name', 'subtitle', 'image', 'status']
 
     def validate_name(self, value):
         if Category.objects.filter(name__iexact=value).exclude(pk=self.instance.pk).exists():

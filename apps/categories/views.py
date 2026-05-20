@@ -281,7 +281,8 @@ class SubCategoryListView(BaseResponseMixin, APIView):
     def get(self, request):
         try:
             qs = SubCategory.objects.filter(status=True)
-            return self.success_response(data=SubCategorySerializer(qs, many=True).data)
+            serializer = SubCategorySerializer(qs, many=True, context={'request': request})
+            return self.success_response(data=serializer.data)
         except Exception as exc:
             return self.handle_exception(exc)
         
@@ -296,7 +297,8 @@ class SubCategoryCreateView(BaseResponseMixin, APIView):
             if not serializer.is_valid():
                 return self.error_response(message="Validation failed", error_code="VALIDATION_ERROR", errors=serializer.errors)
             sub = serializer.save()
-            return self.created_response(data=SubCategorySerializer(sub).data, message="SubCategory created successfully")
+            data = SubCategorySerializer(sub, context={'request': request}).data
+            return self.created_response(data=data, message="SubCategory created successfully")
         except Exception as exc:
             return self.handle_exception(exc)
 
@@ -315,7 +317,7 @@ class SubCategoryDetailView(BaseResponseMixin, APIView):
         sub = self.get_object(pk)
         if not sub:
             return self.not_found_response("SubCategory not found")
-        return self.success_response(data=SubCategorySerializer(sub).data)
+        return self.success_response(data=SubCategorySerializer(sub, context={'request': request}).data)
 
     def patch(self, request, pk):
         sub = self.get_object(pk)
@@ -325,7 +327,7 @@ class SubCategoryDetailView(BaseResponseMixin, APIView):
         if not serializer.is_valid():
             return self.error_response(message="Validation failed", error_code="VALIDATION_ERROR", errors=serializer.errors)
         sub = serializer.save()
-        return self.updated_response(data=SubCategorySerializer(sub).data, message="SubCategory updated successfully")
+        return self.updated_response(data=SubCategorySerializer(sub, context={'request': request}).data, message="SubCategory updated successfully")
 
     def delete(self, request, pk):
         sub = self.get_object(pk)
@@ -346,7 +348,7 @@ class SubCategoryToggleStatusView(BaseResponseMixin, APIView):
         sub.status = not sub.status
         sub.save()
         label = "activated" if sub.status else "deactivated"
-        return self.success_response(data=SubCategorySerializer(sub).data, message=f"SubCategory {label} successfully")
+        return self.success_response(data=SubCategorySerializer(sub, context={'request': request}).data, message=f"SubCategory {label} successfully")
     
 
 class AdminSubCategoryListView(BaseResponseMixin, APIView):
@@ -355,6 +357,7 @@ class AdminSubCategoryListView(BaseResponseMixin, APIView):
     def get(self, request):
         try:
             qs = SubCategory.objects.all()
-            return self.success_response(data=SubCategorySerializer(qs, many=True).data)
+            serializer = SubCategorySerializer(qs, many=True, context={'request': request})
+            return self.success_response(data=serializer.data)
         except Exception as exc:
             return self.handle_exception(exc)

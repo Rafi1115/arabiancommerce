@@ -60,13 +60,13 @@ class SendRegistrationOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
     address = serializers.CharField()  # goes into Address model as full_address
 
-    def validate_phone(self, value):
-        value = value.strip()
-        if not value.startswith("+"):
-            raise serializers.ValidationError(
-                "Phone number must include country code, e.g. +966501234567"
-            )
-        return value
+    # def validate_phone(self, value):
+    #     value = value.strip()
+    #     if not value.startswith("+"):
+    #         raise serializers.ValidationError(
+    #             "Phone number must include country code, e.g. +966501234567"
+    #         )
+    #     return value
 
     def validate_email(self, value):
         phone = self.initial_data.get("phone", "").strip()
@@ -169,13 +169,13 @@ class SendLoginOTPSerializer(serializers.Serializer):
     """
     phone = serializers.CharField(max_length=20)
 
-    def validate_phone(self, value):
-        value = value.strip()
-        if not value.startswith("+"):
-            raise serializers.ValidationError(
-                "Phone number must include country code, e.g. +966501234567"
-            )
-        return value
+    # def validate_phone(self, value):
+    #     value = value.strip()
+    #     if not value.startswith("+"):
+    #         raise serializers.ValidationError(
+    #             "Phone number must include country code, e.g. +966501234567"
+    #         )
+    #     return value
 
     def save(self):
         phone = self.validated_data["phone"]

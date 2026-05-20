@@ -2,6 +2,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
+    subtitle = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to='categories/images/', null=True, blank=True)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
