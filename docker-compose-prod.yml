@@ -68,8 +68,8 @@ services:
     image: nginx:alpine
     container_name: arabian_nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "85:80"
+      - "445:443"
     volumes:
       - ./nginx/sites-available:/etc/nginx/conf.d
       - static_volume:/app/staticfiles:ro
