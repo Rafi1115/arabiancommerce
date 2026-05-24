@@ -23,7 +23,8 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://abdo3rr-4j06mbchv-samiul2102013s-projects.vercel.app"
+    "https://abdo3rr-4j06mbchv-samiul2102013s-projects.vercel.app",
+    "https://abdo3rr-wq5p.vercel.app"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
