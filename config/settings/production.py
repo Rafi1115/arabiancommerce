@@ -19,19 +19,23 @@ SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://abdo3rr-4j06mbchv-samiul2102013s-projects.vercel.app"
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://preachly.app",
     "https://www.preachly.app",
     "https://api.preachly.app",
-    "http://preachly.app", 
+    "http://preachly.app",
     "http://www.preachly.app",
     "http://api.preachly.app",
+    "http://72.62.248.97:85",
 ]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Database configuration
 DATABASES = {
