@@ -11,6 +11,7 @@ urlpatterns = [
 
     # Checkout
     path('checkout/', views.CheckoutView.as_view(), name='checkout'),
+    path('pickup-locations/', views.PickupLocationListView.as_view(), name='pickup-locations'),
 
     # Orders
     path('orders/', views.MyOrderListView.as_view(), name='my-orders'),
@@ -23,4 +24,6 @@ urlpatterns += [
     path('admin/orders/', views.AdminOrderListView.as_view(), name='admin-order-list'),
     path('admin/orders/<int:pk>/', views.AdminOrderDetailView.as_view(), name='admin-order-detail'),
     path('admin/orders/<int:pk>/update-status/', views.AdminOrderDetailView.as_view(), name='admin-order-update-status'),
+    path('admin/pickup-locations/', views.AdminPickupLocationListView.as_view(), name='admin-pickup-location-list-create'),
+    path('admin/pickup-locations/<int:pk>/', views.AdminPickupLocationDetailView.as_view(), name='admin-pickup-location-detail'),
 ]

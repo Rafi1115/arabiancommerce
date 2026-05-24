@@ -1,8 +1,14 @@
 from rest_framework import generics, status, permissions
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.core.utils.mixins import BaseResponseMixin
-from apps.accounts.serializers import AdminLoginSerializer, AdminChangePasswordSerializer, DeliveryZoneSerializer
-from apps.accounts.models import DeliveryZone
+from apps.accounts.serializers import (
+    AdminLoginSerializer,
+    AdminChangePasswordSerializer,
+    DeliveryZoneSerializer,
+    AdminProfileSerializer
+)
+from apps.accounts.models import DeliveryZone, UserProfile
 
 
 class AdminLoginView(BaseResponseMixin, generics.GenericAPIView):
@@ -109,3 +115,30 @@ class DeliveryZoneDetailView(BaseResponseMixin, generics.RetrieveUpdateDestroyAP
     serializer_class = DeliveryZoneSerializer
     permission_classes = [permissions.IsAdminUser]
     queryset = DeliveryZone.objects.all()
+
+
+class AdminUserProfileView(BaseResponseMixin, generics.RetrieveUpdateAPIView):
+    """
+    GET /api/accounts/admin/profile/ -> Retrieve admin profile
+    PUT/PATCH /api/accounts/admin/profile/ -> Update admin profile (name and profile_picture)
+    """
+    serializer_class = AdminProfileSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
+        return profile
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_object())
+        return self.success_response(data=serializer.data, message="Admin profile retrieved.")
+
+    def put(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_object(), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return self.success_response(data=serializer.data, message="Admin profile updated.")
+
+    def patch(self, request, *args, **kwargs):
+        return self.put(request, *args, **kwargs)

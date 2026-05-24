@@ -40,9 +40,32 @@ class CartItem(models.Model):
         return self.product.price * self.quantity
 
 
+class PickupLocation(models.Model):
+    name = models.CharField(max_length=255)
+    address = models.TextField()
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # Enforce that only one location can be active at a time
+            PickupLocation.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+
+
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('order_confirmed', 'Order Confirmed'),
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
         ('processing', 'Processing'),
         ('in_transit', 'In Transit'),
         ('delivered', 'Delivered'),
@@ -75,10 +98,17 @@ class Order(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='orders')
     order_number = models.CharField(max_length=20, unique=True)
-    delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
+    pickup_location = models.ForeignKey(
+        PickupLocation,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders'
+    )
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='order_confirmed')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pending')
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)

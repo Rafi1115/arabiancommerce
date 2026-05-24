@@ -129,6 +129,74 @@
                 "description": "Blacklist the refresh token to logout securely."
               },
               "response": []
+            },
+            {
+              "name": "Get Admin Profile",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/profile/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "profile",
+                    ""
+                  ]
+                },
+                "description": "Retrieve admin profile info (including phone, email, name, profile picture)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Admin Profile",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Admin User",
+                      "type": "text"
+                    },
+                    {
+                      "key": "profile_picture",
+                      "type": "file"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/admin/profile/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "admin",
+                    "profile",
+                    ""
+                  ]
+                },
+                "description": "Update admin profile (name and profile_picture only)."
+              },
+              "response": []
             }
           ]
         },
@@ -503,17 +571,68 @@
                 "method": "POST",
                 "header": [
                   {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
                     "key": "Authorization",
                     "value": "Bearer {{admin_token}}"
                   }
                 ],
                 "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Fresh Camel Meat\",\n  \"category_id\": 1,\n  \"price\": \"45.00\",\n  \"description\": \"Premium high quality fresh camel meat from local farms\",\n  \"initial_stock\": 100\n}"
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Fresh Camel Meat",
+                      "type": "text"
+                    },
+                    {
+                      "key": "category_id",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "subcategory_id",
+                      "value": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price",
+                      "value": "45.00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Premium high quality fresh camel meat from local farms",
+                      "type": "text"
+                    },
+                    {
+                      "key": "initial_stock",
+                      "value": "100",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file"
+                    },
+                    {
+                      "key": "notes_enabled",
+                      "value": "true",
+                      "type": "text"
+                    },
+                    {
+                      "key": "status",
+                      "value": "true",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cut_type_ids",
+                      "value": "[1, 2]",
+                      "type": "text"
+                    },
+                    {
+                      "key": "packaging_type_ids",
+                      "value": "[1]",
+                      "type": "text"
+                    }
+                  ]
                 },
                 "url": {
                   "raw": "{{base_url}}/api/products/admin/products/create/",
@@ -567,17 +686,28 @@
                 "method": "PATCH",
                 "header": [
                   {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
                     "key": "Authorization",
                     "value": "Bearer {{admin_token}}"
                   }
                 ],
                 "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Fresh Camel Meat (Premium)\",\n  \"price\": \"49.99\"\n}"
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "Fresh Camel Meat (Premium)",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price",
+                      "value": "49.99",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file"
+                    }
+                  ]
                 },
                 "url": {
                   "raw": "{{base_url}}/api/products/admin/products/{{product_id}}/update/",
@@ -1150,17 +1280,33 @@
                     "method": "POST",
                     "header": [
                       {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
                         "key": "Authorization",
                         "value": "Bearer {{admin_token}}"
                       }
                     ],
                     "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"name\": \"Camel Meat\",\n  \"status\": true\n}"
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "Camel Meat",
+                          "type": "text"
+                        },
+                        {
+                          "key": "subtitle",
+                          "value": "Fresh Camel meat cuts",
+                          "type": "text"
+                        },
+                        {
+                          "key": "image",
+                          "type": "file"
+                        },
+                        {
+                          "key": "status",
+                          "value": "true",
+                          "type": "text"
+                        }
+                      ]
                     },
                     "url": {
                       "raw": "{{base_url}}/api/categories/admin/categories/create/",
@@ -1214,17 +1360,33 @@
                     "method": "PATCH",
                     "header": [
                       {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
                         "key": "Authorization",
                         "value": "Bearer {{admin_token}}"
                       }
                     ],
                     "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"name\": \"Camel Meat & Cuts\"\n}"
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "Camel Meat & Cuts",
+                          "type": "text"
+                        },
+                        {
+                          "key": "subtitle",
+                          "value": "Fresh premium camel cuts",
+                          "type": "text"
+                        },
+                        {
+                          "key": "image",
+                          "type": "file"
+                        },
+                        {
+                          "key": "status",
+                          "value": "true",
+                          "type": "text"
+                        }
+                      ]
                     },
                     "url": {
                       "raw": "{{base_url}}/api/categories/admin/categories/{{category_id}}/update/",
@@ -1356,17 +1518,33 @@
                     "method": "POST",
                     "header": [
                       {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
                         "key": "Authorization",
                         "value": "Bearer {{admin_token}}"
                       }
                     ],
                     "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"category\": 1,\n  \"name\": \"Fresh Cuts\",\n  \"status\": true\n}"
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "category",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "name",
+                          "value": "Fresh Cuts",
+                          "type": "text"
+                        },
+                        {
+                          "key": "icon",
+                          "type": "file"
+                        },
+                        {
+                          "key": "status",
+                          "value": "true",
+                          "type": "text"
+                        }
+                      ]
                     },
                     "url": {
                       "raw": "{{base_url}}/api/categories/admin/subcategories/create/",
@@ -1420,17 +1598,33 @@
                     "method": "PATCH",
                     "header": [
                       {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
                         "key": "Authorization",
                         "value": "Bearer {{admin_token}}"
                       }
                     ],
                     "body": {
-                      "mode": "raw",
-                      "raw": "{\n  \"name\": \"Fresh Camel Cuts\"\n}"
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "category",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "name",
+                          "value": "Fresh Camel Cuts",
+                          "type": "text"
+                        },
+                        {
+                          "key": "icon",
+                          "type": "file"
+                        },
+                        {
+                          "key": "status",
+                          "value": "true",
+                          "type": "text"
+                        }
+                      ]
                     },
                     "url": {
                       "raw": "{{base_url}}/api/categories/admin/subcategories/{{subcategory_id}}/",
@@ -1631,32 +1825,380 @@
                         "key": "Authorization",
                         "value": "Bearer {{admin_token}}"
                       }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Airless Premium Box\"\n}"
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"Airless Premium Box\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/update/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "packaging-types",
+                        "{{packaging_type_id}}",
+                        "update",
+                        ""
+                      ]
+                    },
+                    "description": "Modify parameters of a packaging type."
+                  },
+                  "response": []
                 },
+                {
+                  "name": "Toggle Packaging Type Status",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/toggle-status/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "packaging-types",
+                        "{{packaging_type_id}}",
+                        "toggle-status",
+                        ""
+                      ]
+                    },
+                    "description": "Toggles active/inactive status."
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete Packaging Type",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/delete/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "api",
+                        "categories",
+                        "admin",
+                        "packaging-types",
+                        "{{packaging_type_id}}",
+                        "delete",
+                        ""
+                      ]
+                    },
+                    "description": "Remove a packaging type configuration permanently."
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Inventory (Admin)",
+          "item": [
+            {
+              "name": "List Inventory Levels",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
                 "url": {
-                  "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/update/",
+                  "raw": "{{base_url}}/api/products/admin/inventory/",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "api",
-                    "categories",
+                    "products",
                     "admin",
-                    "packaging-types",
-                    "{{packaging_type_id}}",
-                    "update",
+                    "inventory",
                     ""
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "camel",
+                      "disabled": true
+                    }
                   ]
                 },
-                "description": "Modify parameters of a packaging type."
+                "description": "Fetch inventory stocks and status levels for all products."
               },
               "response": []
             },
             {
-              "name": "Toggle Packaging Type Status",
+              "name": "Update Inventory Stock",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"stock\": 150,\n  \"low_stock_threshold\": 20\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/products/admin/inventory/{{product_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "admin",
+                    "inventory",
+                    "{{product_id}}",
+                    ""
+                  ]
+                },
+                "description": "Modify the quantity of items in stock and set low stock warning threshold limits."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Orders (Admin)",
+          "item": [
+            {
+              "name": "List Orders",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/orders/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "orders",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "order_confirmed",
+                      "disabled": true
+                    },
+                    {
+                      "key": "payment_method",
+                      "value": "cash",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "John",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Fetch all checkout orders."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Order Detail",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/orders/{{order_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "orders",
+                    "{{order_id}}",
+                    ""
+                  ]
+                },
+                "description": "Retrieve comprehensive receipt structure of an order for admin views."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Order Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"processing\",\n  \"note\": \"Order is packaged and ready to ship out\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/orders/{{order_id}}/update-status/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "orders",
+                    "{{order_id}}",
+                    "update-status",
+                    ""
+                  ]
+                },
+                "description": "Update the tracking state of an order (e.g. order_confirmed -> processing -> in_transit -> delivered). Captures a log tracking note."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Banners (Admin)",
+          "item": [
+            {
+              "name": "List Banners (Admin)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/banners/admin/list/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "banners",
+                    "admin",
+                    "list",
+                    ""
+                  ]
+                },
+                "description": "Fetch all banners (active and inactive)."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Banner",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"banner_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"banner_id\", jsonData.data.id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "title",
+                      "value": "Eid Special Deals",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": []
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "true",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/banners/admin/create/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "banners",
+                    "admin",
+                    "create",
+                    ""
+                  ]
+                },
+                "description": "Upload a marketing image/banner for home screen widgets."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Banner",
               "request": {
                 "method": "PATCH",
                 "header": [
@@ -1665,27 +2207,36 @@
                     "value": "Bearer {{admin_token}}"
                   }
                 ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "title",
+                      "value": "Eid Ultimate Special Deals",
+                      "type": "text"
+                    }
+                  ]
+                },
                 "url": {
-                  "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/toggle-status/",
+                  "raw": "{{base_url}}/api/banners/admin/{{banner_id}}/update/",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "api",
-                    "categories",
+                    "banners",
                     "admin",
-                    "packaging-types",
-                    "{{packaging_type_id}}",
-                    "toggle-status",
+                    "{{banner_id}}",
+                    "update",
                     ""
                   ]
                 },
-                "description": "Toggles active/inactive status."
+                "description": "Modify dynamic details of a banner."
               },
               "response": []
             },
             {
-              "name": "Delete Packaging Type",
+              "name": "Delete Banner",
               "request": {
                 "method": "DELETE",
                 "header": [
@@ -1695,1744 +2246,2095 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/api/categories/admin/packaging-types/{{packaging_type_id}}/delete/",
+                  "raw": "{{base_url}}/api/banners/admin/{{banner_id}}/delete/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "banners",
+                    "admin",
+                    "{{banner_id}}",
+                    "delete",
+                    ""
+                  ]
+                },
+                "description": "Permanently remove a banner."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Pickup Locations (Admin)",
+          "item": [
+            {
+              "name": "List Pickup Locations (Admin)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/pickup-locations/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "pickup-locations",
+                    ""
+                  ]
+                },
+                "description": "List all configured store locations (both active and inactive)."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Pickup Location (Admin)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Jumeirah Beach Road Store\",\n  \"address\": \"Jumeirah 1, Beach Road, Dubai\",\n  \"latitude\": 25.2281,\n  \"longitude\": 55.2502,\n  \"is_active\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/pickup-locations/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "pickup-locations",
+                    ""
+                  ]
+                },
+                "description": "Create a new store location."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Pickup Location Detail (Admin)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/pickup-locations/{{pickup_location_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "pickup-locations",
+                    "{{pickup_location_id}}",
+                    ""
+                  ]
+                },
+                "description": "Get detailed information of a specific store location."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Pickup Location (Admin)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Jumeirah Beach Road Store (Updated)\",\n  \"is_active\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/pickup-locations/{{pickup_location_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "pickup-locations",
+                    "{{pickup_location_id}}",
+                    ""
+                  ]
+                },
+                "description": "Update specific fields of a store location."
+              },
+              "response": []
+            },
+            {
+              "name": "Deactivate Pickup Location (Admin)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/admin/pickup-locations/{{pickup_location_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "admin",
+                    "pickup-locations",
+                    "{{pickup_location_id}}",
+                    ""
+                  ]
+                },
+                "description": "Soft delete / deactivate a store location."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Notifications",
+          "description": "Endpoints for managing admin-created and scheduled notifications",
+          "item": [
+            {
+              "name": "Send Immediate Notification",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Immediate Alert\",\n  \"message\": \"This is an immediate test notification.\",\n  \"recipient_type\": \"all\",\n  \"notification_types\": [\n    \"push\",\n    \"in_app\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/admin/send-immediate/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "admin",
+                    "send-immediate",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Schedule Notification",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Scheduled Alert\",\n  \"message\": \"This is a scheduled notification.\",\n  \"scheduled_at\": \"2026-12-25T12:00:00Z\",\n  \"recipient_type\": \"all\",\n  \"notification_types\": [\n    \"push\",\n    \"email\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/admin/schedule/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "admin",
+                    "schedule",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Cancel Scheduled Notification",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/admin/scheduled/:notification_id/cancel/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "admin",
+                    "scheduled",
+                    ":notification_id",
+                    "cancel",
+                    ""
+                  ],
+                  "variable": [
+                    {
+                      "key": "notification_id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Scheduled Notifications List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/admin/scheduled/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "admin",
+                    "scheduled",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Unified Notifications History",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/admin-notifications/unified/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "admin-notifications",
+                    "unified",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Unified Notifications Stats",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/admin-notifications/stats/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "admin-notifications",
+                    "stats",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Admin Creators List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/admin-notifications/creators/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "admin-notifications",
+                    "creators",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get User List for Notifications",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/users/?search=user",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "users",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "user"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete Single Notification",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/delete/:notification_id/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "delete",
+                    ":notification_id",
+                    ""
+                  ],
+                  "variable": [
+                    {
+                      "key": "notification_id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Bulk Delete Notifications",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"notification_ids\": [\n    1,\n    2\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/bulk-delete/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "bulk-delete",
+                    ""
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Customer App",
+      "description": "Customer flows: Authentication via OTP, Profile information, Address management with location-based pricing, browsing active catalog items, managing Cart operations, and checking out Orders.",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Register - Send OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+971501234567\",\n  \"name\": \"Rafi Al-Fayed\",\n  \"email\": \"rafi@example.com\",\n  \"address\": \"Villa 15, King Fahd Road, Riyadh\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/register/send-otp/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "register",
+                    "send-otp",
+                    ""
+                  ]
+                },
+                "description": "Step 1 of customer registration. Sends a verification OTP to the target phone number."
+              },
+              "response": []
+            },
+            {
+              "name": "Register - Verify OTP",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.access) {",
+                      "    pm.environment.set(\"customer_token\", jsonData.data.access);",
+                      "    pm.collectionVariables.set(\"customer_token\", jsonData.data.access);",
+                      "    console.log(\"Customer Token successfully captured and saved!\");",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+971501234567\",\n  \"otp\": \"123456\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/register/verify-otp/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "register",
+                    "verify-otp",
+                    ""
+                  ]
+                },
+                "description": "Step 2 of customer registration. Verifies OTP, activates the account, and automatically captures the resulting customer Bearer token."
+              },
+              "response": []
+            },
+            {
+              "name": "Login - Send OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+971501234567\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/login/send-otp/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "login",
+                    "send-otp",
+                    ""
+                  ]
+                },
+                "description": "Step 1 of customer login. Sends a secure login OTP to the registered phone number."
+              },
+              "response": []
+            },
+            {
+              "name": "Login - Verify OTP",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.access) {",
+                      "    pm.environment.set(\"customer_token\", jsonData.data.access);",
+                      "    pm.collectionVariables.set(\"customer_token\", jsonData.data.access);",
+                      "    console.log(\"Customer Token successfully captured and saved!\");",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+971501234567\",\n  \"otp\": \"123456\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/login/verify-otp/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "login",
+                    "verify-otp",
+                    ""
+                  ]
+                },
+                "description": "Step 2 of customer login. Validates OTP and sets the customer Bearer token variable."
+              },
+              "response": []
+            },
+            {
+              "name": "Resend OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+971501234567\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/resend-otp/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "resend-otp",
+                    ""
+                  ]
+                },
+                "description": "Request another OTP SMS message."
+              },
+              "response": []
+            },
+            {
+              "name": "Token Refresh",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh\": \"your_refresh_token_here\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/token/refresh/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "token",
+                    "refresh",
+                    ""
+                  ]
+                },
+                "description": "Obtain a fresh access token using a refresh token."
+              },
+              "response": []
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh\": \"your_refresh_token_here\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/logout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "logout",
+                    ""
+                  ]
+                },
+                "description": "Blacklist customer refresh token and logout."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "User Profile",
+          "item": [
+            {
+              "name": "Get User Profile",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/profile/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "profile",
+                    ""
+                  ]
+                },
+                "description": "Fetch logged-in customer's profile details."
+              },
+              "response": []
+            },
+            {
+              "name": "Update User Profile",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "John Doe",
+                      "type": "text"
+                    },
+                    {
+                      "key": "email",
+                      "value": "johndoe@example.com",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/profile/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "profile",
+                    ""
+                  ]
+                },
+                "description": "Partially update specific fields on user profile (name, email, image)."
+              },
+              "response": []
+            },
+            {
+              "name": "Deactivate My Account",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"confirm\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/account/delete/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "account",
+                    "delete",
+                    ""
+                  ]
+                },
+                "description": "Perform soft-delete to deactivate the customer's account."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Addresses",
+          "item": [
+            {
+              "name": "List Addresses",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/addresses/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "addresses",
+                    ""
+                  ]
+                },
+                "description": "Get all saved addresses. Shows delivery fees and zones assigned."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Address",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"address_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"address_id\", jsonData.data.id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Home\",\n  \"full_address\": \"Villa 123, Dubai Marina, Dubai, UAE\",\n  \"city\": \"Dubai\",\n  \"area\": \"Marina\",\n  \"latitude\": 25.078,\n  \"longitude\": 55.14,\n  \"is_default\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/addresses/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "addresses",
+                    ""
+                  ]
+                },
+                "description": "Add new delivery address. Automatically determines delivery_zone based on coordinate distance or text match, setting the variable `address_id`."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Address",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"My Sweet Home\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/addresses/{{address_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "addresses",
+                    "{{address_id}}",
+                    ""
+                  ]
+                },
+                "description": "Modify details of a specific address."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Address",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/addresses/{{address_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "addresses",
+                    "{{address_id}}",
+                    ""
+                  ]
+                },
+                "description": "Delete a specific address."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Browse & Banners",
+          "item": [
+            {
+              "name": "Get Active Banners",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/banners/list/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "banners",
+                    "list",
+                    ""
+                  ]
+                },
+                "description": "Fetch only active marketing slides."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Active Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categories/list/",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "api",
                     "categories",
-                    "admin",
-                    "packaging-types",
-                    "{{packaging_type_id}}",
-                    "delete",
+                    "list",
                     ""
                   ]
                 },
-                "description": "Remove a packaging type configuration permanently."
+                "description": "Fetch active product category listings."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Active SubCategories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categories/sub/list/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categories",
+                    "sub",
+                    "list",
+                    ""
+                  ]
+                },
+                "description": "Fetch list of active subcategories."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Packaging Types",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categories/packaging-types/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categories",
+                    "packaging-types",
+                    ""
+                  ]
+                },
+                "description": "Fetch all active box/packaging selections."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Active Products",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.length > 0) {",
+                      "    pm.environment.set(\"product_id\", jsonData.data[0].id);",
+                      "    pm.collectionVariables.set(\"product_id\", jsonData.data[0].id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/products/list/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "list",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "category_id",
+                      "value": "1",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "meat",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Browse active catalogue items. Captures first product to `product_id`."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Product Detail",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/products/detail/{{product_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "detail",
+                    "{{product_id}}",
+                    ""
+                  ]
+                },
+                "description": "Get comprehensive detail overview of a specific product (includes linked cut/packaging profiles)."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Active Cut Types",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/products/cut-types/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "products",
+                    "cut-types",
+                    ""
+                  ]
+                },
+                "description": "Fetch active global cut choices."
               },
               "response": []
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "Inventory (Admin)",
-      "item": [
-        {
-          "name": "List Inventory Levels",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/products/admin/inventory/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "admin",
-                "inventory",
-                ""
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "camel",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Fetch inventory stocks and status levels for all products."
-          },
-          "response": []
         },
         {
-          "name": "Update Inventory Stock",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"stock\": 150,\n  \"low_stock_threshold\": 20\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/products/admin/inventory/{{product_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "admin",
-                "inventory",
-                "{{product_id}}",
-                ""
-              ]
-            },
-            "description": "Modify the quantity of items in stock and set low stock warning threshold limits."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Orders (Admin)",
-      "item": [
-        {
-          "name": "List Orders",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/admin/orders/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "admin",
-                "orders",
-                ""
-              ],
-              "query": [
-                {
-                  "key": "status",
-                  "value": "order_confirmed",
-                  "disabled": true
-                },
-                {
-                  "key": "payment_method",
-                  "value": "cash",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "John",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Fetch all checkout orders."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Order Detail",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/admin/orders/{{order_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "admin",
-                "orders",
-                "{{order_id}}",
-                ""
-              ]
-            },
-            "description": "Retrieve comprehensive receipt structure of an order for admin views."
-          },
-          "response": []
-        },
-        {
-          "name": "Update Order Status",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"processing\",\n  \"note\": \"Order is packaged and ready to ship out\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/admin/orders/{{order_id}}/update-status/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "admin",
-                "orders",
-                "{{order_id}}",
-                "update-status",
-                ""
-              ]
-            },
-            "description": "Update the tracking state of an order (e.g. order_confirmed -> processing -> in_transit -> delivered). Captures a log tracking note."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Banners (Admin)",
-      "item": [
-        {
-          "name": "List Banners (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/banners/admin/list/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "banners",
-                "admin",
-                "list",
-                ""
-              ]
-            },
-            "description": "Fetch all banners (active and inactive)."
-          },
-          "response": []
-        },
-        {
-          "name": "Create Banner",
-          "event": [
+          "name": "Cart Operations",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.id) {",
-                  "    pm.environment.set(\"banner_id\", jsonData.data.id);",
-                  "    pm.collectionVariables.set(\"banner_id\", jsonData.data.id);",
-                  "}"
+              "name": "Get Cart",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
                 ],
-                "type": "text/javascript"
+                "url": {
+                  "raw": "{{base_url}}/api/orders/cart/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "cart",
+                    ""
+                  ]
+                },
+                "description": "Retrieve current items in user shopping basket with dynamic subtotals and delivery charges calculated from default address."
+              },
+              "response": []
+            },
+            {
+              "name": "Add Item to Cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
+                      "    pm.environment.set(\"cart_item_id\", jsonData.data.items[0].id);",
+                      "    pm.collectionVariables.set(\"cart_item_id\", jsonData.data.items[0].id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": {{product_id}},\n  \"quantity\": 2,\n  \"cut_type_id\": null,\n  \"packaging_type_id\": null\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/cart/add/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "cart",
+                    "add",
+                    ""
+                  ]
+                },
+                "description": "Add product items to basket. Optional parameters are `cut_type_id` and `packaging_type_id`. Sets variable `cart_item_id`."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Cart Item Quantity",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"quantity\": 4\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/cart/items/{{cart_item_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "cart",
+                    "items",
+                    "{{cart_item_id}}",
+                    ""
+                  ]
+                },
+                "description": "Change the quantity of an item in the cart."
+              },
+              "response": []
+            },
+            {
+              "name": "Remove Item from Cart",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/cart/items/{{cart_item_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "cart",
+                    "items",
+                    "{{cart_item_id}}",
+                    ""
+                  ]
+                },
+                "description": "Delete specific item mapping from cart."
+              },
+              "response": []
+            },
+            {
+              "name": "Clear Cart",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/cart/clear/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "cart",
+                    "clear",
+                    ""
+                  ]
+                },
+                "description": "Wipe out all items inside basket."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Checkout & Orders",
+          "item": [
+            {
+              "name": "Get Active Pickup Locations",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/pickup-locations/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "pickup-locations",
+                    ""
+                  ]
+                },
+                "description": "Fetch active stores/pickup locations for checkout selection."
+              },
+              "response": []
+            },
+            {
+              "name": "Checkout - Cash on Delivery",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"cash\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/checkout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "checkout",
+                    ""
+                  ]
+                },
+                "description": "Convert items in cart to a dynamic receipt order via Cash on Delivery."
+              },
+              "response": []
+            },
+            {
+              "name": "Checkout - Stripe (Card)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                      "}",
+                      "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
+                      "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
+                      "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
+                      "}",
+                      "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
+                      "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
+                      "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"card\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/checkout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "checkout",
+                    ""
+                  ]
+                },
+                "description": "Convert items in cart to a dynamic receipt order via Stripe online card payment."
+              },
+              "response": []
+            },
+            {
+              "name": "Checkout - Tabby (Installments)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                      "}",
+                      "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
+                      "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
+                      "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
+                      "}",
+                      "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
+                      "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
+                      "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"tabby\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/checkout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "checkout",
+                    ""
+                  ]
+                },
+                "description": "Convert items in cart to a dynamic receipt order via Tabby installment payment."
+              },
+              "response": []
+            },
+            {
+              "name": "Checkout - Tamara (BNPL)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData && jsonData.data && jsonData.data.id) {",
+                      "    pm.environment.set(\"order_id\", jsonData.data.id);",
+                      "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
+                      "}",
+                      "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
+                      "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
+                      "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
+                      "}",
+                      "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
+                      "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
+                      "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"tamara\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/orders/checkout/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "checkout",
+                    ""
+                  ]
+                },
+                "description": "Convert items in cart to a dynamic receipt order via Tamara BNPL installment payment."
+              },
+              "response": []
+            },
+            {
+              "name": "My Active Orders",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/orders/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "orders",
+                    ""
+                  ]
+                },
+                "description": "Get current active orders (excludes completed/cancelled)."
+              },
+              "response": []
+            },
+            {
+              "name": "My Order History",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/orders/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "orders",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "mode",
+                      "value": "history"
+                    }
+                  ]
+                },
+                "description": "Retrieve completed/cancelled orders history."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Order Detail",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/orders/{{order_id}}/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "orders",
+                    "{{order_id}}",
+                    ""
+                  ]
+                },
+                "description": "Retrieve status details and logistics tracking steps for a specific order."
+              },
+              "response": []
+            },
+            {
+              "name": "Cancel Order",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/orders/orders/{{order_id}}/cancel/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "orders",
+                    "orders",
+                    "{{order_id}}",
+                    "cancel",
+                    ""
+                  ]
+                },
+                "description": "Cancel the order. Only possible if the order's tracking status is still `order_confirmed`."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3. Payments & Webhooks",
+          "item": [
+            {
+              "name": "Simulate Payment Callback (Succeed)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"transaction_id\": \"{{transaction_id}}\",\n  \"status\": \"paid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/payments/simulate-callback/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "payments",
+                    "simulate-callback",
+                    ""
+                  ]
+                },
+                "description": "Simulate a successful payment webhook callback for the current `transaction_id`. Marks order as paid."
+              },
+              "response": []
+            },
+            {
+              "name": "Simulate Payment Callback (Decline)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"transaction_id\": \"{{transaction_id}}\",\n  \"status\": \"failed\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/payments/simulate-callback/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "payments",
+                    "simulate-callback",
+                    ""
+                  ]
+                },
+                "description": "Simulate a failed payment webhook callback for the current `transaction_id`. Marks order as failed."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Notifications",
+          "description": "Endpoints for retrieving notifications, toggling preferences, and registering device tokens",
+          "item": [
+            {
+              "name": "Get Notifications List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/list/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "list",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Unread Count",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/list/unread_count/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "list",
+                    "unread_count",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Mark All Read",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/list/mark_all_read/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "list",
+                    "mark_all_read",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Mark Read",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/list/:notification_id/mark_read/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "list",
+                    ":notification_id",
+                    "mark_read",
+                    ""
+                  ],
+                  "variable": [
+                    {
+                      "key": "notification_id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Clear All",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/list/clear_all/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "list",
+                    "clear_all",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Register FCM Token",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"fcm_device_token_string_here\",\n  \"device_type\": \"android\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/fcm-tokens/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "fcm-tokens",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Notification Preferences",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/preferences/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "preferences",
+                    ""
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Notification Preferences",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{customer_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"push_enabled\": true,\n  \"email_enabled\": true,\n  \"sms_enabled\": false\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/notifications/preferences/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "notifications",
+                    "preferences",
+                    ""
+                  ]
+                }
               }
             }
-          ],
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Pages & Support",
+      "description": "Standard compliance policies and Frequently Asked Questions (FAQs) required by payment systems.",
+      "item": [
+        {
+          "name": "Get Privacy Policy",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "title",
-                  "value": "Eid Special Deals",
-                  "type": "text"
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "src": []
-                },
-                {
-                  "key": "is_active",
-                  "value": "true",
-                  "type": "text"
-                }
-              ]
-            },
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/api/banners/admin/create/",
+              "raw": "{{base_url}}/api/core/documents/privacy-policy/",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "banners",
-                "admin",
-                "create",
+                "core",
+                "documents",
+                "privacy-policy",
                 ""
               ]
             },
-            "description": "Upload a marketing image/banner for home screen widgets."
+            "description": "Retrieve the dynamic Privacy Policy document. Highly critical for Stripe, Tabby, and Tamara compliance."
           },
           "response": []
         },
         {
-          "name": "Update Banner",
+          "name": "Get Terms & Conditions",
           "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "title",
-                  "value": "Eid Ultimate Special Deals",
-                  "type": "text"
-                }
-              ]
-            },
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/api/banners/admin/{{banner_id}}/update/",
+              "raw": "{{base_url}}/api/core/documents/terms-and-conditions/",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "banners",
-                "admin",
-                "{{banner_id}}",
-                "update",
+                "core",
+                "documents",
+                "terms-and-conditions",
                 ""
               ]
             },
-            "description": "Modify dynamic details of a banner."
+            "description": "Retrieve the dynamic Terms & Conditions document. Highly critical for Stripe, Tabby, and Tamara compliance."
           },
           "response": []
         },
         {
-          "name": "Delete Banner",
+          "name": "Get Refund & Cancellation Policy",
           "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              }
-            ],
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/api/banners/admin/{{banner_id}}/delete/",
+              "raw": "{{base_url}}/api/core/documents/refund-policy/",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "banners",
-                "admin",
-                "{{banner_id}}",
-                "delete",
+                "core",
+                "documents",
+                "refund-policy",
                 ""
               ]
             },
-            "description": "Permanently remove a banner."
+            "description": "Retrieve the dynamic Refund & Cancellation Policy document. Highly critical for Stripe, Tabby, and Tamara compliance."
+          },
+          "response": []
+        },
+        {
+          "name": "Get FAQs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/core/faqs/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "core",
+                "faqs",
+                ""
+              ]
+            },
+            "description": "Retrieve Frequently Asked Questions categorized and grouped."
           },
           "response": []
         }
       ]
     }
-  ]
-},
-{
-  "name": "2. Customer App",
-  "description": "Customer flows: Authentication via OTP, Profile information, Address management with location-based pricing, browsing active catalog items, managing Cart operations, and checking out Orders.",
-  "item": [
-    {
-      "name": "Authentication",
-      "item": [
-        {
-          "name": "Register - Send OTP",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phone\": \"+971501234567\",\n  \"name\": \"Rafi Al-Fayed\",\n  \"email\": \"rafi@example.com\",\n  \"address\": \"Villa 15, King Fahd Road, Riyadh\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/register/send-otp/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "register",
-                "send-otp",
-                ""
-              ]
-            },
-            "description": "Step 1 of customer registration. Sends a verification OTP to the target phone number."
-          },
-          "response": []
-        },
-        {
-          "name": "Register - Verify OTP",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.access) {",
-                  "    pm.environment.set(\"customer_token\", jsonData.data.access);",
-                  "    pm.collectionVariables.set(\"customer_token\", jsonData.data.access);",
-                  "    console.log(\"Customer Token successfully captured and saved!\");",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phone\": \"+971501234567\",\n  \"otp\": \"123456\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/register/verify-otp/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "register",
-                "verify-otp",
-                ""
-              ]
-            },
-            "description": "Step 2 of customer registration. Verifies OTP, activates the account, and automatically captures the resulting customer Bearer token."
-          },
-          "response": []
-        },
-        {
-          "name": "Login - Send OTP",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phone\": \"+971501234567\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/login/send-otp/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "login",
-                "send-otp",
-                ""
-              ]
-            },
-            "description": "Step 1 of customer login. Sends a secure login OTP to the registered phone number."
-          },
-          "response": []
-        },
-        {
-          "name": "Login - Verify OTP",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.access) {",
-                  "    pm.environment.set(\"customer_token\", jsonData.data.access);",
-                  "    pm.collectionVariables.set(\"customer_token\", jsonData.data.access);",
-                  "    console.log(\"Customer Token successfully captured and saved!\");",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phone\": \"+971501234567\",\n  \"otp\": \"123456\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/login/verify-otp/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "login",
-                "verify-otp",
-                ""
-              ]
-            },
-            "description": "Step 2 of customer login. Validates OTP and sets the customer Bearer token variable."
-          },
-          "response": []
-        },
-        {
-          "name": "Resend OTP",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phone\": \"+971501234567\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/resend-otp/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "resend-otp",
-                ""
-              ]
-            },
-            "description": "Request another OTP SMS message."
-          },
-          "response": []
-        },
-        {
-          "name": "Token Refresh",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refresh\": \"your_refresh_token_here\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/token/refresh/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "token",
-                "refresh",
-                ""
-              ]
-            },
-            "description": "Obtain a fresh access token using a refresh token."
-          },
-          "response": []
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refresh\": \"your_refresh_token_here\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/logout/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "logout",
-                ""
-              ]
-            },
-            "description": "Blacklist customer refresh token and logout."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "User Profile",
-      "item": [
-        {
-          "name": "Get User Profile",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/accounts/profile/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "profile",
-                ""
-              ]
-            },
-            "description": "Fetch logged-in customer's profile details."
-          },
-          "response": []
-        },
-        {
-          "name": "Update User Profile",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "name",
-                  "value": "John Doe",
-                  "type": "text"
-                },
-                {
-                  "key": "email",
-                  "value": "johndoe@example.com",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/profile/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "profile",
-                ""
-              ]
-            },
-            "description": "Partially update specific fields on user profile (name, email, image)."
-          },
-          "response": []
-        },
-        {
-          "name": "Deactivate My Account",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"confirm\": true\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/account/delete/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "account",
-                "delete",
-                ""
-              ]
-            },
-            "description": "Perform soft-delete to deactivate the customer's account."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Addresses",
-      "item": [
-        {
-          "name": "List Addresses",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/accounts/addresses/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "addresses",
-                ""
-              ]
-            },
-            "description": "Get all saved addresses. Shows delivery fees and zones assigned."
-          },
-          "response": []
-        },
-        {
-          "name": "Create Address",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.id) {",
-                  "    pm.environment.set(\"address_id\", jsonData.data.id);",
-                  "    pm.collectionVariables.set(\"address_id\", jsonData.data.id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Home\",\n  \"full_address\": \"Villa 123, Dubai Marina, Dubai, UAE\",\n  \"city\": \"Dubai\",\n  \"area\": \"Marina\",\n  \"latitude\": 25.078,\n  \"longitude\": 55.14,\n  \"is_default\": true\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/addresses/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "addresses",
-                ""
-              ]
-            },
-            "description": "Add new delivery address. Automatically determines delivery_zone based on coordinate distance or text match, setting the variable `address_id`."
-          },
-          "response": []
-        },
-        {
-          "name": "Update Address",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"My Sweet Home\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/accounts/addresses/{{address_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "addresses",
-                "{{address_id}}",
-                ""
-              ]
-            },
-            "description": "Modify details of a specific address."
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Address",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/accounts/addresses/{{address_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "accounts",
-                "addresses",
-                "{{address_id}}",
-                ""
-              ]
-            },
-            "description": "Delete a specific address."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Browse & Banners",
-      "item": [
-        {
-          "name": "Get Active Banners",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/banners/list/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "banners",
-                "list",
-                ""
-              ]
-            },
-            "description": "Fetch only active marketing slides."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Active Categories",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/categories/list/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "categories",
-                "list",
-                ""
-              ]
-            },
-            "description": "Fetch active product category listings."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Active SubCategories",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/categories/sub/list/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "categories",
-                "sub",
-                "list",
-                ""
-              ]
-            },
-            "description": "Fetch list of active subcategories."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Packaging Types",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/categories/packaging-types/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "categories",
-                "packaging-types",
-                ""
-              ]
-            },
-            "description": "Fetch all active box/packaging selections."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Active Products",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.length > 0) {",
-                  "    pm.environment.set(\"product_id\", jsonData.data[0].id);",
-                  "    pm.collectionVariables.set(\"product_id\", jsonData.data[0].id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/products/list/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "list",
-                ""
-              ],
-              "query": [
-                {
-                  "key": "category_id",
-                  "value": "1",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "meat",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Browse active catalogue items. Captures first product to `product_id`."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Product Detail",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/products/detail/{{product_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "detail",
-                "{{product_id}}",
-                ""
-              ]
-            },
-            "description": "Get comprehensive detail overview of a specific product (includes linked cut/packaging profiles)."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Active Cut Types",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/products/cut-types/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "cut-types",
-                ""
-              ]
-            },
-            "description": "Fetch active global cut choices."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Cart Operations",
-      "item": [
-        {
-          "name": "Get Cart",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/cart/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "cart",
-                ""
-              ]
-            },
-            "description": "Retrieve current items in user shopping basket with dynamic subtotals and delivery charges calculated from default address."
-          },
-          "response": []
-        },
-        {
-          "name": "Add Item to Cart",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
-                  "    pm.environment.set(\"cart_item_id\", jsonData.data.items[0].id);",
-                  "    pm.collectionVariables.set(\"cart_item_id\", jsonData.data.items[0].id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"product_id\": {{product_id}},\n  \"quantity\": 2,\n  \"cut_type_id\": null,\n  \"packaging_type_id\": null\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/cart/add/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "cart",
-                "add",
-                ""
-              ]
-            },
-            "description": "Add product items to basket. Optional parameters are `cut_type_id` and `packaging_type_id`. Sets variable `cart_item_id`."
-          },
-          "response": []
-        },
-        {
-          "name": "Update Cart Item Quantity",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"quantity\": 4\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/cart/items/{{cart_item_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "cart",
-                "items",
-                "{{cart_item_id}}",
-                ""
-              ]
-            },
-            "description": "Change the quantity of an item in the cart."
-          },
-          "response": []
-        },
-        {
-          "name": "Remove Item from Cart",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/cart/items/{{cart_item_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "cart",
-                "items",
-                "{{cart_item_id}}",
-                ""
-              ]
-            },
-            "description": "Delete specific item mapping from cart."
-          },
-          "response": []
-        },
-        {
-          "name": "Clear Cart",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/cart/clear/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "cart",
-                "clear",
-                ""
-              ]
-            },
-            "description": "Wipe out all items inside basket."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Checkout & Orders",
-      "item": [
-        {
-          "name": "Checkout - Cash on Delivery",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.id) {",
-                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
-                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"cash\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/checkout/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "checkout",
-                ""
-              ]
-            },
-            "description": "Convert items in cart to a dynamic receipt order via Cash on Delivery."
-          },
-          "response": []
-        },
-        {
-          "name": "Checkout - Stripe (Card)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.id) {",
-                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
-                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
-                  "}",
-                  "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
-                  "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
-                  "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
-                  "}",
-                  "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
-                  "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
-                  "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"card\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/checkout/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "checkout",
-                ""
-              ]
-            },
-            "description": "Convert items in cart to a dynamic receipt order via Stripe online card payment."
-          },
-          "response": []
-        },
-        {
-          "name": "Checkout - Tabby (Installments)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.id) {",
-                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
-                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
-                  "}",
-                  "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
-                  "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
-                  "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
-                  "}",
-                  "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
-                  "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
-                  "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"tabby\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/checkout/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "checkout",
-                ""
-              ]
-            },
-            "description": "Convert items in cart to a dynamic receipt order via Tabby installment payment."
-          },
-          "response": []
-        },
-        {
-          "name": "Checkout - Tamara (BNPL)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData && jsonData.data && jsonData.data.id) {",
-                  "    pm.environment.set(\"order_id\", jsonData.data.id);",
-                  "    pm.collectionVariables.set(\"order_id\", jsonData.data.id);",
-                  "}",
-                  "if (jsonData && jsonData.data && jsonData.data.transaction_id) {",
-                  "    pm.environment.set(\"transaction_id\", jsonData.data.transaction_id);",
-                  "    pm.collectionVariables.set(\"transaction_id\", jsonData.data.transaction_id);",
-                  "}",
-                  "if (jsonData && jsonData.data && jsonData.data.payment_url) {",
-                  "    pm.environment.set(\"payment_url\", jsonData.data.payment_url);",
-                  "    pm.collectionVariables.set(\"payment_url\", jsonData.data.payment_url);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"address_id\": {{address_id}},\n  \"payment_method\": \"tamara\",\n  \"receive_method\": \"home_delivery\",\n  \"delivery_type\": \"today\",\n  \"notes\": \"Leave at the door\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/checkout/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "checkout",
-                ""
-              ]
-            },
-            "description": "Convert items in cart to a dynamic receipt order via Tamara BNPL installment payment."
-          },
-          "response": []
-        },
-        {
-          "name": "My Active Orders",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/orders/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "orders",
-                ""
-              ]
-            },
-            "description": "Get current active orders (excludes completed/cancelled)."
-          },
-          "response": []
-        },
-        {
-          "name": "My Order History",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/orders/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "orders",
-                ""
-              ],
-              "query": [
-                {
-                  "key": "mode",
-                  "value": "history"
-                }
-              ]
-            },
-            "description": "Retrieve completed/cancelled orders history."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Order Detail",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/orders/{{order_id}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "orders",
-                "{{order_id}}",
-                ""
-              ]
-            },
-            "description": "Retrieve status details and logistics tracking steps for a specific order."
-          },
-          "response": []
-        },
-        {
-          "name": "Cancel Order",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{customer_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/orders/{{order_id}}/cancel/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "orders",
-                "{{order_id}}",
-                "cancel",
-                ""
-              ]
-            },
-            "description": "Cancel the order. Only possible if the order's tracking status is still `order_confirmed`."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "3. Payments & Webhooks",
-      "item": [
-        {
-          "name": "Simulate Payment Callback (Succeed)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"transaction_id\": \"{{transaction_id}}\",\n  \"status\": \"paid\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/payments/simulate-callback/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "payments",
-                "simulate-callback",
-                ""
-              ]
-            },
-            "description": "Simulate a successful payment webhook callback for the current `transaction_id`. Marks order as paid."
-          },
-          "response": []
-        },
-        {
-          "name": "Simulate Payment Callback (Decline)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"transaction_id\": \"{{transaction_id}}\",\n  \"status\": \"failed\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/payments/simulate-callback/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "payments",
-                "simulate-callback",
-                ""
-              ]
-            },
-            "description": "Simulate a failed payment webhook callback for the current `transaction_id`. Marks order as failed."
-          },
-          "response": []
-        }
-      ]
-    }
-  ]
-},
-{
-  "name": "4. Pages & Support",
-  "description": "Standard compliance policies and Frequently Asked Questions (FAQs) required by payment systems.",
-  "item": [
-    {
-      "name": "Get Privacy Policy",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/core/documents/privacy-policy/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "core",
-            "documents",
-            "privacy-policy",
-            ""
-          ]
-        },
-        "description": "Retrieve the dynamic Privacy Policy document. Highly critical for Stripe, Tabby, and Tamara compliance."
-      },
-      "response": []
-    },
-    {
-      "name": "Get Terms & Conditions",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/core/documents/terms-and-conditions/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "core",
-            "documents",
-            "terms-and-conditions",
-            ""
-          ]
-        },
-        "description": "Retrieve the dynamic Terms & Conditions document. Highly critical for Stripe, Tabby, and Tamara compliance."
-      },
-      "response": []
-    },
-    {
-      "name": "Get Refund & Cancellation Policy",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/core/documents/refund-policy/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "core",
-            "documents",
-            "refund-policy",
-            ""
-          ]
-        },
-        "description": "Retrieve the dynamic Refund & Cancellation Policy document. Highly critical for Stripe, Tabby, and Tamara compliance."
-      },
-      "response": []
-    },
-    {
-      "name": "Get FAQs",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/core/faqs/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "core",
-            "faqs",
-            ""
-          ]
-        },
-        "description": "Retrieve Frequently Asked Questions categorized and grouped."
-      },
-      "response": []
-    }
-  ]
-}
   ],
   "variable": [
     {

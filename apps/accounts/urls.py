@@ -13,7 +13,14 @@ from apps.accounts.views.customers_views import (
     AccountSoftDeleteView,
     AccountRestoreView,
 )
-from apps.accounts.views.admin_views import AdminLoginView, AdminChangePasswordView, AdminLogoutView, DeliveryZoneListCreateView, DeliveryZoneDetailView
+from apps.accounts.views.admin_views import (
+    AdminLoginView,
+    AdminChangePasswordView,
+    AdminLogoutView,
+    DeliveryZoneListCreateView,
+    DeliveryZoneDetailView,
+    AdminUserProfileView
+)
 
 # Customer urlpatterns
 urlpatterns = [
@@ -48,6 +55,7 @@ urlpatterns += [
     path("admin/login/", AdminLoginView.as_view(), name="admin-login"),
     path("admin/logout/", AdminLogoutView.as_view(), name="admin-logout"),
     path("admin/change-password/", AdminChangePasswordView.as_view(), name="admin-change-password"),
+    path("admin/profile/", AdminUserProfileView.as_view(), name="admin-profile"),
     path("admin/delivery-zones/", DeliveryZoneListCreateView.as_view(), name="delivery-zone-list-create"),
     path("admin/delivery-zones/<int:pk>/", DeliveryZoneDetailView.as_view(), name="delivery-zone-detail"),
 ]

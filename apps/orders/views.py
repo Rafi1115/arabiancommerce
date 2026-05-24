@@ -1,9 +1,9 @@
 from decimal import Decimal
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from apps.core.utils.mixins import BaseResponseMixin
-from .models import Cart, CartItem, Order, OrderItem, OrderTracking
+from .models import Cart, CartItem, Order, OrderItem, OrderTracking, PickupLocation
 from .serializers import (
     CartSerializer,
     CartItemAddSerializer,
@@ -13,6 +13,7 @@ from .serializers import (
     AdminOrderListSerializer,
     AdminOrderDetailSerializer,
     AdminOrderStatusUpdateSerializer,
+    PickupLocationSerializer,
 )
 
 DELIVERY_FEE = Decimal('89')
@@ -175,12 +176,25 @@ class CheckoutView(BaseResponseMixin, APIView):
                 )
 
             data = serializer.validated_data
-            from apps.accounts.models import Address
-            address = Address.objects.get(pk=data['address_id'], user__user=request.user)
+            receive_method = data.get('receive_method', 'home_delivery')
+            address_id = data.get('address_id')
+            pickup_location_id = data.get('pickup_location_id')
+
+            address = None
+            if address_id:
+                from apps.accounts.models import Address
+                address = Address.objects.get(pk=address_id, user__user=request.user)
+
+            pickup_location = None
+            if pickup_location_id:
+                pickup_location = PickupLocation.objects.get(pk=pickup_location_id)
 
             subtotal = cart.total
-            # Calculate delivery fee based on address zone
-            delivery_fee = address.delivery_zone.delivery_fee if address.delivery_zone else DELIVERY_FEE
+            # Calculate delivery fee based on address zone (delivery fee is 0 for self-pickup)
+            if receive_method == 'receive_in_market':
+                delivery_fee = Decimal('0')
+            else:
+                delivery_fee = address.delivery_zone.delivery_fee if (address and address.delivery_zone) else DELIVERY_FEE
             total = subtotal + delivery_fee
 
             # Create order
@@ -188,6 +202,7 @@ class CheckoutView(BaseResponseMixin, APIView):
             order = Order.objects.create(
                 user=request.user,
                 delivery_address=address,
+                pickup_location=pickup_location,
                 payment_method=payment_method,
                 receive_method=data.get('receive_method', 'home_delivery'),
                 delivery_type=data.get('delivery_type', 'today'),
@@ -264,7 +279,22 @@ class MyOrderListView(BaseResponseMixin, APIView):
         try:
             orders = Order.objects.filter(user=request.user)
             mode = request.query_params.get('mode')
-            if mode == 'history':
+            status_param = request.query_params.get('status')
+
+            if status_param:
+                # Map client/frontend status names to backend database status values
+                status_map = {
+                    'pending': 'pending',
+                    'accepted': 'accepted',
+                    'under_progress': 'processing',
+                    'on_the_way': 'in_transit',
+                    'completed': 'delivered',
+                    'cancelled': 'cancelled',
+                }
+                normalized = status_param.lower().strip().replace(' ', '_')
+                db_status = status_map.get(normalized, status_param)
+                orders = orders.filter(status=db_status)
+            elif mode == 'history':
                 orders = orders.filter(status__in=['delivered', 'cancelled'])
             else:
                 orders = orders.exclude(status__in=['delivered', 'cancelled'])
@@ -339,15 +369,18 @@ class AdminOrderListView(BaseResponseMixin, APIView):
 
     def get(self, request):
         try:
-            orders = Order.objects.select_related('user', 'delivery_address').all()
+            orders = Order.objects.select_related('user', 'delivery_address', 'pickup_location').all()
             status = request.query_params.get('status')
             search = request.query_params.get('search')
             payment_method = request.query_params.get('payment_method')
+            pickup_location_id = request.query_params.get('pickup_location_id')
 
             if status:
                 orders = orders.filter(status=status)
             if payment_method:
                 orders = orders.filter(payment_method=payment_method)
+            if pickup_location_id:
+                orders = orders.filter(pickup_location_id=pickup_location_id)
             if search:
                 orders = orders.filter(order_number__icontains=search) | \
                          orders.filter(user__first_name__icontains=search) | \
@@ -381,7 +414,7 @@ class AdminOrderDetailView(BaseResponseMixin, APIView):
     def get_object(self, pk):
         try:
             return Order.objects.prefetch_related('items', 'tracking').select_related(
-                'user', 'delivery_address'
+                'user', 'delivery_address', 'pickup_location'
             ).get(pk=pk)
         except Order.DoesNotExist:
             return None
@@ -425,5 +458,109 @@ class AdminOrderDetailView(BaseResponseMixin, APIView):
                 data=AdminOrderDetailSerializer(order, context={'request': request}).data,
                 message=f"Order status updated to {data['status']}"
             )
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class PickupLocationListView(BaseResponseMixin, APIView):
+    """
+    GET /api/orders/pickup-locations/  → list active pickup locations
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            locations = PickupLocation.objects.filter(is_active=True)
+            serializer = PickupLocationSerializer(locations, many=True)
+            return self.success_response(data=serializer.data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class AdminPickupLocationListView(BaseResponseMixin, APIView):
+    """
+    GET  /api/orders/admin/pickup-locations/  → list all stores (active and inactive)
+    POST /api/orders/admin/pickup-locations/  → create new store
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        try:
+            locations = PickupLocation.objects.all()
+            serializer = PickupLocationSerializer(locations, many=True)
+            return self.success_response(data=serializer.data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+    def post(self, request):
+        try:
+            serializer = PickupLocationSerializer(data=request.data)
+            if not serializer.is_valid():
+                return self.error_response(
+                    message="Validation failed",
+                    error_code="VALIDATION_ERROR",
+                    errors=serializer.errors
+                )
+            location = serializer.save()
+            return self.created_response(
+                data=PickupLocationSerializer(location).data,
+                message="Pickup location created successfully"
+            )
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+
+class AdminPickupLocationDetailView(BaseResponseMixin, APIView):
+    """
+    GET    /api/orders/admin/pickup-locations/<pk>/  → retrieve store details
+    PUT    /api/orders/admin/pickup-locations/<pk>/  → update store details
+    DELETE /api/orders/admin/pickup-locations/<pk>/  → deactivate store
+    """
+    permission_classes = [IsAdminUser]
+
+    def get_object(self, pk):
+        try:
+            return PickupLocation.objects.get(pk=pk)
+        except PickupLocation.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        try:
+            location = self.get_object(pk)
+            if not location:
+                return self.not_found_response("Pickup location not found")
+            serializer = PickupLocationSerializer(location)
+            return self.success_response(data=serializer.data)
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+    def put(self, request, pk):
+        try:
+            location = self.get_object(pk)
+            if not location:
+                return self.not_found_response("Pickup location not found")
+            serializer = PickupLocationSerializer(location, data=request.data, partial=True)
+            if not serializer.is_valid():
+                return self.error_response(
+                    message="Validation failed",
+                    error_code="VALIDATION_ERROR",
+                    errors=serializer.errors
+                )
+            location = serializer.save()
+            return self.success_response(
+                data=PickupLocationSerializer(location).data,
+                message="Pickup location updated successfully"
+            )
+        except Exception as exc:
+            return self.handle_exception(exc)
+
+    def delete(self, request, pk):
+        try:
+            location = self.get_object(pk)
+            if not location:
+                return self.not_found_response("Pickup location not found")
+            location.is_active = False
+            location.save()
+            return self.success_response(message="Pickup location deactivated successfully")
         except Exception as exc:
             return self.handle_exception(exc)

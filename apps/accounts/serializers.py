@@ -292,6 +292,17 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             
         instance.save()
         return instance
+
+
+class AdminProfileSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(source="user.phone", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ["phone", "email", "name", "profile_picture"]
+        read_only_fields = ["phone", "email"]
+
     
 class AddressSerializer(serializers.ModelSerializer):
     delivery_zone_name = serializers.CharField(source='delivery_zone.name', read_only=True)

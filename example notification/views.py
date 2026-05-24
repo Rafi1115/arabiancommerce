@@ -163,13 +163,12 @@ from django.utils import timezone
 from datetime import datetime
 from django.db.models import Q
 from .models import ScheduledNotification
-from django.contrib.auth import get_user_model
+from apps.accounts.models import User
 
        
 @api_view(['POST'])
 def send_notification_to_all(request):
     """Send notification to all users or specific user"""
-    User = get_user_model()
     title = request.data.get('title')
     message = request.data.get('message')
     recipient = request.data.get('recipient', 'all')  # 'all' or user_email
@@ -205,7 +204,6 @@ def send_notification_to_all(request):
 @api_view(['GET'])
 def user_list_for_notifications(request):
     """Get simple user list for notification dropdown"""
-    User = get_user_model()
     search = request.GET.get('search', '')
     
     users = User.objects.filter(is_active=True, is_blocked=False)
@@ -323,7 +321,6 @@ def schedule_notification(request):
     """
     Admin endpoint to schedule notifications
     """
-    User = get_user_model()
     try:
         data = request.data
         
@@ -395,7 +392,6 @@ def send_immediate_notification(request):
     """
     Updated to save immediate notifications for tracking
     """
-    User = get_user_model()
     try:
         data = request.data
         
@@ -429,7 +425,7 @@ def send_immediate_notification(request):
         for user in target_users:
             try:
                 # Send using your existing service
-                from apps.notifications.services.notification_service import NotificationService
+                from apps.notification.services.notification_service import NotificationService
                 NotificationService.send_notification(
                     user_id=user.id,
                     title=data['title'],
@@ -840,7 +836,6 @@ def admin_creators_list(request):
     """
     Get list of admin users who have created notifications
     """
-    User = get_user_model()
     try:
         # Get admins who created scheduled notifications
         admin_users = User.objects.filter(

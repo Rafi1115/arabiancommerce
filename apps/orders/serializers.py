@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cart, CartItem, Order, OrderItem, OrderTracking
+from .models import Cart, CartItem, Order, OrderItem, OrderTracking, PickupLocation
 from apps.products.serializers import ProductListSerializer
 from apps.accounts.serializers import AddressSerializer
 from apps.accounts.models import Address
@@ -93,6 +93,12 @@ class OrderTrackingSerializer(serializers.ModelSerializer):
         fields = ['id', 'status', 'note', 'timestamp']
 
 
+class PickupLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PickupLocation
+        fields = ['id', 'name', 'address', 'latitude', 'longitude', 'is_active']
+
+
 class OrderListSerializer(serializers.ModelSerializer):
     """Lightweight — for list views and order history"""
     first_item_image = serializers.SerializerMethodField()
@@ -117,19 +123,21 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     tracking = OrderTrackingSerializer(many=True, read_only=True)
     delivery_address = AddressSerializer(read_only=True)
+    pickup_location = PickupLocationSerializer(read_only=True)
 
     class Meta:
         model = Order
         fields = [
             'id', 'order_number', 'status', 'payment_method', 'payment_status',
-            'receive_method', 'delivery_type', 'scheduled_at',   # ← new
-            'delivery_address', 'items', 'subtotal', 'delivery_fee', 'total',
+            'receive_method', 'delivery_type', 'scheduled_at',
+            'delivery_address', 'pickup_location', 'items', 'subtotal', 'delivery_fee', 'total',
             'tracking', 'notes', 'created_at', 'updated_at'
         ]
 
 
 class CheckoutSerializer(serializers.Serializer):
-    address_id = serializers.IntegerField()
+    address_id = serializers.IntegerField(required=False, allow_null=True)
+    pickup_location_id = serializers.IntegerField(required=False, allow_null=True)
     payment_method = serializers.ChoiceField(choices=['cash', 'card', 'tabby', 'tamara'])
     receive_method = serializers.ChoiceField(
         choices=['home_delivery', 'receive_in_market'],
@@ -143,6 +151,20 @@ class CheckoutSerializer(serializers.Serializer):
     notes = serializers.CharField(required=False, allow_blank=True)
 
     def validate(self, data):
+        receive_method = data.get('receive_method', 'home_delivery')
+        address_id = data.get('address_id')
+        pickup_location_id = data.get('pickup_location_id')
+
+        if receive_method == 'home_delivery' and not address_id:
+            raise serializers.ValidationError({
+                'address_id': 'address_id is required for home delivery.'
+            })
+
+        if receive_method == 'receive_in_market' and not pickup_location_id:
+            raise serializers.ValidationError({
+                'pickup_location_id': 'pickup_location_id is required for pickup in market.'
+            })
+
         if data.get('delivery_type') == 'scheduled' and not data.get('scheduled_at'):
             raise serializers.ValidationError({
                 'scheduled_at': 'scheduled_at is required when delivery_type is scheduled.'
@@ -150,10 +172,20 @@ class CheckoutSerializer(serializers.Serializer):
         return data
 
     def validate_address_id(self, value):
+        if value is None:
+            return value
         from apps.accounts.models import Address
         request = self.context.get('request')
         if not Address.objects.filter(pk=value, user__user=request.user).exists():
             raise serializers.ValidationError("Address not found.")
+        return value
+
+    def validate_pickup_location_id(self, value):
+        if value is None:
+            return value
+        from .models import PickupLocation
+        if not PickupLocation.objects.filter(pk=value, is_active=True).exists():
+            raise serializers.ValidationError("Active pickup location not found.")
         return value
 
 
@@ -181,6 +213,7 @@ class AdminOrderDetailSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     tracking = OrderTrackingSerializer(many=True, read_only=True)
     delivery_address = AddressSerializer(read_only=True)
+    pickup_location = PickupLocationSerializer(read_only=True)
     customer_name = serializers.SerializerMethodField()
     customer_email = serializers.SerializerMethodField()
     customer_phone = serializers.SerializerMethodField()
@@ -189,8 +222,8 @@ class AdminOrderDetailSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'order_number', 'customer_name', 'customer_email', 'customer_phone',
-            'status', 'payment_method', 'payment_status', 'receive_method', 'delivery_type', 'scheduled_at',   # ← new
-            'delivery_address', 'items', 'subtotal', 'delivery_fee', 'total',
+            'status', 'payment_method', 'payment_status', 'receive_method', 'delivery_type', 'scheduled_at',
+            'delivery_address', 'pickup_location', 'items', 'subtotal', 'delivery_fee', 'total',
             'tracking', 'notes', 'created_at', 'updated_at'
         ]
 
